@@ -1,0 +1,2 @@
+defmodule AshDoubleEntry do
+end
