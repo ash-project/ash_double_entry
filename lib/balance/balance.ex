@@ -1,27 +1,28 @@
-defmodule AshDoubleEntry.Transfer do
-  @account %Spark.Dsl.Section{
-    name: :transfer,
+defmodule AshDoubleEntry.Balance do
+  @balance %Spark.Dsl.Section{
+    name: :balance,
     schema: [
       pre_check_identities_with: [
         type: {:spark, Ash.Api},
         doc: "An api to use to precheck generated identities. Required by certain data layers."
       ],
-      account_resource: [
-        type: Ash.OptionsHelpers.ash_resource(),
-        doc: "The resource to use for account balances",
+      transfer_resource: [
+        type: {:spark, Ash.Resource},
+        doc: "The resource used for transfers",
         required: true
       ],
-      balance_resource: [
+      account_resource: [
         type: {:spark, Ash.Resource},
-        doc: "The resource being used for balances"
+        doc: "The resource used for accounts",
+        required: true
       ]
     ]
   }
 
-  @sections [@account]
+  @sections [@balance]
 
   @transformers [
-    AshDoubleEntry.Transfer.Transformers.AddStructure
+    AshDoubleEntry.Balance.Transformers.AddStructure
   ]
 
   use Spark.Dsl.Extension,

@@ -1,6 +1,30 @@
 defmodule AshDoubleEntry.Account do
   @account %Spark.Dsl.Section{
-    name: :account
+    name: :account,
+    schema: [
+      open_action_accept: [
+        type: {:list, :atom},
+        doc: """
+        A list of extra attributes to be accepted by the open action.
+        The `identifier` and `currency` attributes are always accepted.
+        """,
+        default: []
+      ],
+      pre_check_identities_with: [
+        type: {:spark, Ash.Api},
+        doc: "An api to use to precheck generated identities. Required by certain data layers."
+      ],
+      transfer_resource: [
+        type: {:spark, Ash.Resource},
+        doc: "The resource used for transfers",
+        required: true
+      ],
+      balance_resource: [
+        type: {:spark, Ash.Resource},
+        doc: "The resource used for balances",
+        required: true
+      ]
+    ]
   }
 
   @sections [@account]
