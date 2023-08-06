@@ -8,10 +8,10 @@ defmodule AshDoubleEntryTest do
       extensions: [AshDoubleEntry.Account]
 
     account do
-      pre_check_identities_with(AshDoubleEntryTest.Api)
-      transfer_resource(AshDoubleEntryTest.Transfer)
-      balance_resource(AshDoubleEntryTest.Balance)
-      open_action_accept([:allow_zero_balance])
+      pre_check_identities_with AshDoubleEntryTest.Api
+      transfer_resource AshDoubleEntryTest.Transfer
+      balance_resource AshDoubleEntryTest.Balance
+      open_action_accept [:allow_zero_balance]
     end
 
     attributes do
@@ -29,8 +29,8 @@ defmodule AshDoubleEntryTest do
       extensions: [AshDoubleEntry.Transfer]
 
     transfer do
-      account_resource(Account)
-      balance_resource(AshDoubleEntryTest.Balance)
+      account_resource Account
+      balance_resource AshDoubleEntryTest.Balance
     end
   end
 
@@ -40,9 +40,9 @@ defmodule AshDoubleEntryTest do
       extensions: [AshDoubleEntry.Balance]
 
     balance do
-      pre_check_identities_with(AshDoubleEntryTest.Api)
-      transfer_resource(Transfer)
-      account_resource(Account)
+      pre_check_identities_with AshDoubleEntryTest.Api
+      transfer_resource Transfer
+      account_resource Account
     end
 
     changes do

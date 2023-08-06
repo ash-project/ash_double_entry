@@ -8,6 +8,7 @@ defmodule AshDoubleEntry.MixProject do
       elixir: "~> 1.15",
       start_permanent: Mix.env() == :prod,
       consolidate_protocols: Mix.env() != :test,
+      aliases: aliases(),
       deps: deps()
     ]
   end
@@ -19,11 +20,20 @@ defmodule AshDoubleEntry.MixProject do
     ]
   end
 
+  defp aliases do
+    [
+      sobelow: "sobelow --skip",
+      credo: "credo --strict",
+      docs: ["docs", "ash.replace_doc_links"],
+      "spark.formatter":
+        "spark.formatter --extensions AshDoubleEntry.Account,AshDoubleEntry.Balance,AshDoubleEntry.Transfer"
+    ]
+  end
+
   # Run "mix help deps" to learn about dependencies.
   defp deps do
     [
-      # {:ash, "~> 2.13"}
-      {:ash, path: "../../ash/ash"}
+      {:ash, github: "ash-project/ash"}
       # {:dep_from_hexpm, "~> 0.3.0"},
       # {:dep_from_git, git: "https://github.com/elixir-lang/my_dep.git", tag: "0.1.0"}
     ]

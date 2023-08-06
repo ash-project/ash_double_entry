@@ -5,3 +5,7 @@ if config_env() == :test do
   config :ash, :validate_api_resource_inclusion?, false
   config :ash, :validate_api_config_inclusion?, false
 end
+
+config :spark, :formatter,
+  remove_parens?: true,
+  "Ash.Resource": []
