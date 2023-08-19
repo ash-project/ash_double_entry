@@ -200,7 +200,7 @@ YourApp.Ledger.Transfer
   from_account_id: account_one.id,
   to_account_id: account_two.id
 })
-|> YourApp.LedgerApi.create!()
+|> YourApp.Ledger.create!()
 ```
 
 #### Check an account's balance
