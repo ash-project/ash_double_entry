@@ -1,4 +1,8 @@
 defmodule AshDoubleEntry.Account do
+  @moduledoc """
+  An extension for creating a double entry ledger account. See the getting started guide for more.
+  """
+
   @account %Spark.Dsl.Section{
     name: :account,
     schema: [

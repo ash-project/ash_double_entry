@@ -1,4 +1,7 @@
 defmodule AshDoubleEntry.Transfer.Transformers.AddStructure do
+  @moduledoc """
+  Adds all the structure required for the resource. See the getting started guide for more.
+  """
   use Spark.Dsl.Transformer
 
   def before?(Ash.Resource.Transformers.CachePrimaryKey), do: true

@@ -123,6 +123,7 @@ defmodule AshDoubleEntry.MixProject do
       ],
       groups_for_extras: groups_for_extras(),
       groups_for_modules: [
+        AshDoubleEntry: ~r/AshDoubleEntry.*/,
         Internals: ~r/.*/
       ]
     ]
@@ -131,7 +132,33 @@ defmodule AshDoubleEntry.MixProject do
   # Run "mix help deps" to learn about dependencies.
   defp deps do
     [
-      {:ash, "~> 2.14"}
+      {:ash, ash_version("~> 2.14")},
+      {:git_ops, "~> 2.5", only: [:dev, :test]},
+      {:ex_doc, "~> 0.22", only: [:dev, :test], runtime: false},
+      {:ex_check, "~> 0.14", only: [:dev, :test]},
+      {:credo, ">= 0.0.0", only: [:dev, :test], runtime: false},
+      {:dialyxir, ">= 0.0.0", only: [:dev, :test], runtime: false},
+      {:sobelow, ">= 0.0.0", only: [:dev, :test], runtime: false},
+      {:excoveralls, "~> 0.14", only: [:dev, :test]}
     ]
+  end
+
+  defp ash_version(default_version) do
+    case System.get_env("ASH_VERSION") do
+      nil ->
+        default_version
+
+      "local" ->
+        [path: "../ash"]
+
+      "main" ->
+        [git: "https://github.com/ash-project/ash.git"]
+
+      version when is_binary(version) ->
+        "~> #{version}"
+
+      version ->
+        version
+    end
   end
 end

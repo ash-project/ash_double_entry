@@ -1,4 +1,8 @@
 defmodule AshDoubleEntry.Transfer do
+  @moduledoc """
+  An extension for creating a double entry ledger transfer. See the getting started guide for more.
+  """
+
   @account %Spark.Dsl.Section{
     name: :transfer,
     schema: [

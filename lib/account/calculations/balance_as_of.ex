@@ -1,4 +1,7 @@
 defmodule AshDoubleEntry.Account.Calculations.BalanceAsOf do
+  @moduledoc """
+  Calculates the balance as of a given datetime. See the getting started guide for more.
+  """
   use Ash.Calculation
   require Ash.Expr
 

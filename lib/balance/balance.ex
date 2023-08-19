@@ -1,4 +1,8 @@
 defmodule AshDoubleEntry.Balance do
+  @moduledoc """
+  An extension for creating a double entry ledger balance. See the getting started guide for more.
+  """
+
   @balance %Spark.Dsl.Section{
     name: :balance,
     schema: [
