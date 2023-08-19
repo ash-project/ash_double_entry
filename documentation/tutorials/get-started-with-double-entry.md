@@ -171,7 +171,7 @@ end
 
 And add the API to your config
 
-`config :your_app, ash_apis: [..., YourApp.Ledger]
+`config :your_app, ash_apis: [..., YourApp.Ledger]`
 
 ### Generate Migrations
 
