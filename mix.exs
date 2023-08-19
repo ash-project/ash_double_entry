@@ -114,8 +114,8 @@ defmodule AshDoubleEntry.MixProject do
             type: "Extension"
           },
           %{
-            module: AshDoubleEntry.Balance,
-            name: "AshDoubleEntry.Balance",
+            module: AshDoubleEntry.Account,
+            name: "AshDoubleEntry.Account",
             target: "Ash.Resource",
             type: "Extension"
           }
