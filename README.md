@@ -2,7 +2,7 @@
 
 An extensible double entry system built using [Ash](ash-hq.org) resources.
 
-See the [getting-started-guide](github.com/ash-project/ash_double_entry.git) to
+See the [getting started guide](https://hexdocs.pm/ash_double_entry/get-started-with-double-entry.html) to
 setup the project!
 
 ## Installation
