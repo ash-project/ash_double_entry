@@ -194,13 +194,13 @@ YourApp.Ledger.Account
 #### Create transfers between accounts
 
 ```elixir
-YourApp.Ledger.Transfer
+Webuilt.Ledger.Transfer
 |> Ash.Changeset.for_create(:transfer, %{
   amount: Decimal.new(20),
   from_account_id: account_one.id,
   to_account_id: account_two.id
 })
-|> YourApp.LedgerApi.create!()
+|> Webuilt.LedgerApi.create!()
 ```
 
 #### Check an account's balance
