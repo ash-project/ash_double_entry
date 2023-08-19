@@ -153,3 +153,53 @@ end
   exist
   - a create action caleld `:upsert_balance`, which will create or update the relevant balance, by `transfer_id` and `account_id`
 - Adds an identity that ensures that `account_id` and `transfer_id` are unique
+
+
+### Define an Ash api to use them through
+
+```elixir
+defmodule YourApp.Ledger do
+  use Ash.Api
+
+  resources do
+    resource YourApp.Account
+    resource YourApp.Balance
+    resource YourApp.Transfer
+  end
+end
+```
+
+### Use them
+
+#### Create an account
+
+```elixir
+Account
+|> Ash.Changeset.for_create(:open, %{identifier: "account_one", currency: "USD"})
+|> Api.create!()
+```
+
+#### Create transfers between accounts
+
+```elixir
+Transfer
+|> Ash.Changeset.for_create(:transfer, %{
+  amount: Decimal.new(20),
+  from_account_id: account_one.id,
+  to_account_id: account_two.id
+})
+|> Api.create!()
+```
+
+#### Check an account's balance
+
+```elixir
+Account
+|> Api.get!(account_id, load: :balance)
+|> Map.get(:balance)
+# => Decimal.new("20")
+```
+
+## What else can you do?
+
+There are tons of things you can do with your resources. You can add code interfaces to give yourself a nice functional api. You can add custom attributes, aggregates, calculations, relationships, validations, changes, all the great things built into `Ash.Resource`! See the docs for more: [AshHq](https://ash-hq.org).
