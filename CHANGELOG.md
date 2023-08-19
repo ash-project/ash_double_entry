@@ -7,7 +7,7 @@ See [Conventional Commits](Https://conventionalcommits.org) for commit guideline
 
 ## [v0.1.2](https://github.com/ash-project/ash_double_entry/compare/v0.1.1...v0.1.2) (2023-08-19)
 
-
+- Documentation updates & AshHq indexing fixes
 
 
 ## [v0.1.1](https://github.com/ash-project/ash_double_entry/compare/v0.1.0...v0.1.1) (2023-08-19)
