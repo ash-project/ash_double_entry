@@ -13,8 +13,7 @@ defmodule AshDoubleEntry.Transfer.Changes.VerifyTransfer do
     |> Ash.Changeset.before_action(fn changeset ->
       from_account_id = Ash.Changeset.get_attribute(changeset, :from_account_id)
       to_account_id = Ash.Changeset.get_attribute(changeset, :to_account_id)
-      from_amount = Ash.Changeset.get_attribute(changeset, :from_amount)
-      to_amount = Ash.Changeset.get_attribute(changeset, :to_amount)
+      amount = Ash.Changeset.get_attribute(changeset, :amount)
       timestamp = Ash.Changeset.get_attribute(changeset, :timestamp)
 
       timestamp =
@@ -26,27 +25,21 @@ defmodule AshDoubleEntry.Transfer.Changes.VerifyTransfer do
       ulid = AshDoubleEntry.ULID.generate(timestamp)
 
       accounts =
-        try do
-          changeset.resource
-          |> AshDoubleEntry.Transfer.Info.transfer_account_resource!()
-          |> Ash.Query.filter(id in ^[from_account_id, to_account_id])
-          |> Ash.Query.for_read(:lock_accounts)
-          |> Ash.Query.load(balance_as_of_ulid: %{ulid: ulid})
-          |> changeset.api.read!(authorize?: false, tracer: context[:tracer])
-        rescue
-          e ->
-            IO.puts(Exception.format(:error, e, __STACKTRACE__))
-            []
-        end
+        changeset.resource
+        |> AshDoubleEntry.Transfer.Info.transfer_account_resource!()
+        |> Ash.Query.filter(id in ^[from_account_id, to_account_id])
+        |> Ash.Query.for_read(:lock_accounts)
+        |> Ash.Query.load(balance_as_of_ulid: %{ulid: ulid})
+        |> changeset.api.read!(authorize?: false, tracer: context[:tracer])
 
       from_account = Enum.find(accounts, &(&1.id == from_account_id))
       to_account = Enum.find(accounts, &(&1.id == to_account_id))
 
       new_from_account_balance =
-        Decimal.sub(from_account.balance_as_of_ulid, from_amount)
+        Decimal.sub(from_account.balance_as_of_ulid, amount)
 
       new_to_account_balance =
-        Decimal.add(to_account.balance_as_of_ulid, to_amount)
+        Decimal.add(to_account.balance_as_of_ulid, amount)
 
       changeset.resource
       |> AshDoubleEntry.Transfer.Info.transfer_balance_resource!()
@@ -80,8 +73,7 @@ defmodule AshDoubleEntry.Transfer.Changes.VerifyTransfer do
       |> Ash.Changeset.set_context(%{
         from_account: from_account,
         to_account: to_account,
-        from_amount: from_amount,
-        to_amount: to_amount
+        amount: amount
       })
     end)
     |> Ash.Changeset.after_action(fn changeset, result ->
@@ -98,17 +90,17 @@ defmodule AshDoubleEntry.Transfer.Changes.VerifyTransfer do
           %{
             account_id: balance.account_id,
             transfer_id: balance.transfer_id,
-            balance: Decimal.sub(balance.balance, changeset.context.from_amount)
+            balance: Decimal.sub(balance.balance, changeset.context.amount)
           }
         else
           %{
             account_id: balance.account_id,
             transfer_id: balance.transfer_id,
-            balance: Decimal.add(balance.balance, changeset.context.to_amount)
+            balance: Decimal.add(balance.balance, changeset.context.amount)
           }
         end
       end)
-      |> changeset.api.bulk_create(
+      |> changeset.api.bulk_create!(
         AshDoubleEntry.Transfer.Info.transfer_balance_resource!(changeset.resource),
         :upsert_balance,
         context_to_opts(context,
@@ -119,7 +111,6 @@ defmodule AshDoubleEntry.Transfer.Changes.VerifyTransfer do
       )
 
       {:ok, result}
-      # do verification logic
     end)
   end
 

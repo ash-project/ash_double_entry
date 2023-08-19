@@ -7,7 +7,6 @@ defmodule AshDoubleEntry.Balance.Transformers.AddStructure do
 
   def transform(dsl) do
     dsl
-    |> add_primary_read_action()
     |> Ash.Resource.Builder.add_attribute(:id, :uuid,
       primary_key?: true,
       writable?: false,
@@ -15,6 +14,7 @@ defmodule AshDoubleEntry.Balance.Transformers.AddStructure do
       allow_nil?: false,
       default: &Ash.UUID.generate/0
     )
+    |> Ash.Resource.Builder.add_attribute(:balance, :decimal, allow_nil?: false)
     |> Ash.Resource.Builder.add_relationship(
       :belongs_to,
       :transfer,
@@ -30,14 +30,14 @@ defmodule AshDoubleEntry.Balance.Transformers.AddStructure do
       allow_nil?: false,
       attribute_writable?: true
     )
-    |> Ash.Resource.Builder.add_attribute(:balance, :decimal, allow_nil?: false)
-    |> Ash.Resource.Builder.add_identity(:unique_references, [:account_id, :transfer_id],
-      pre_check_with: pre_check_with(dsl)
-    )
+    |> add_primary_read_action()
     |> Ash.Resource.Builder.add_action(:create, :upsert_balance,
       accept: [:balance, :account_id, :transfer_id],
       upsert?: true,
       upsert_identity: :unique_references
+    )
+    |> Ash.Resource.Builder.add_identity(:unique_references, [:account_id, :transfer_id],
+      pre_check_with: pre_check_with(dsl)
     )
   end
 

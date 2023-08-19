@@ -15,8 +15,6 @@ defmodule AshDoubleEntryTest do
     end
 
     attributes do
-      uuid_primary_key :id
-
       attribute :allow_zero_balance, :boolean do
         default true
       end

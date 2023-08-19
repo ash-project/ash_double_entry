@@ -8,28 +8,18 @@ defmodule AshDoubleEntry.Account.Transformers.AddStructure do
   def transform(dsl) do
     dsl
     |> add_primary_read_action()
-    |> add_balance_as_of_ulid_calculation()
-    |> add_balance_as_of_calculation()
-    |> Ash.Resource.Builder.add_attribute(:identifier, :string, allow_nil?: false)
-    |> Ash.Resource.Builder.add_aggregate(:balance, :first, [:balances],
-      field: :balance,
-      default: Decimal.new(0),
-      sort: [transfer_id: :desc]
+    |> Ash.Resource.Builder.add_attribute(:id, :uuid,
+      primary_key?: true,
+      writable?: false,
+      generated?: true,
+      allow_nil?: false,
+      default: &Ash.UUID.generate/0
     )
+    |> Ash.Resource.Builder.add_attribute(:identifier, :string, allow_nil?: false)
     |> Ash.Resource.Builder.add_attribute(
       :currency,
       :string,
       allow_nil?: false
-    )
-    |> Ash.Resource.Builder.add_attribute(
-      :must_be_positive,
-      :boolean,
-      allow_nil?: false,
-      default: true
-    )
-    |> Ash.Resource.Builder.add_attribute(:inserted_at, :utc_datetime_usec,
-      allow_nil?: false,
-      default: &DateTime.utc_now/0
     )
     |> Ash.Resource.Builder.add_action(:create, :open,
       accept:
@@ -44,15 +34,25 @@ defmodule AshDoubleEntry.Account.Transformers.AddStructure do
         )
       ]
     )
-    |> Ash.Resource.Builder.add_identity(:unique_identifier, [:identifier],
-      pre_check_with: pre_check_with(dsl)
+    |> Ash.Resource.Builder.add_attribute(:inserted_at, :utc_datetime_usec,
+      allow_nil?: false,
+      default: &DateTime.utc_now/0
+    )
+    |> Ash.Resource.Builder.add_aggregate(:balance, :first, [:balances],
+      field: :balance,
+      default: Decimal.new(0),
+      sort: [transfer_id: :desc]
     )
     |> Ash.Resource.Builder.add_relationship(
       :has_many,
       :balances,
       AshDoubleEntry.Account.Info.account_balance_resource!(dsl),
-      destination_attribute: :account_id,
-      source_attribute: :id
+      destination_attribute: :account_id
+    )
+    |> add_balance_as_of_ulid_calculation()
+    |> add_balance_as_of_calculation()
+    |> Ash.Resource.Builder.add_identity(:unique_identifier, [:identifier],
+      pre_check_with: pre_check_with(dsl)
     )
   end
 
@@ -88,19 +88,6 @@ defmodule AshDoubleEntry.Account.Transformers.AddStructure do
           :utc_datetime_usec,
           allow_nil?: false
         )
-      ]
-    )
-  end
-
-  defbuilder add_balance_aggregate(dsl) do
-    Ash.Resource.Builder.add_aggregate(
-      dsl,
-      :balance,
-      :first,
-      [:balances],
-      field: :balance,
-      query: [
-        sort: [ulid: :desc]
       ]
     )
   end
