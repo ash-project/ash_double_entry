@@ -16,7 +16,7 @@ defmodule AshDoubleEntry.Account.Calculations.BalanceAsOfUlid do
           default: Decimal.new(0),
           query: [
             filter: [
-              transfer_id: [lt: context[:ulid]]
+              transfer_id: [lte: context[:ulid]]
             ],
             sort: [
               transfer_id: :desc
