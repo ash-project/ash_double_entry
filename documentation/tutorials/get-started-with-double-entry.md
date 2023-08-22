@@ -15,7 +15,7 @@ Ash Double Entry is implemented as a set of Ash resource extensions. You build t
 #### Example
 
 ```elixir
-defmodule YourApp.Leger.Account do
+defmodule YourApp.Ledger.Account do
   use Ash.Resource,
     data_layer: AshPostgres.DataLayer,
     extensions: [AshDoubleEntry.Account]
@@ -66,7 +66,7 @@ end
 #### Example
 
 ```elixir
-defmodule YourApp.Transfer do
+defmodule YourApp.Ledger.Transfer do
   use Ash.Resource,
     data_layer: AshPostgres.DataLayer,
     extensions: [AshDoubleEntry.Transfer]
@@ -206,7 +206,7 @@ YourApp.Ledger.Transfer
 #### Check an account's balance
 
 ```elixir
-YourApp.Leger.Account
+YourApp.Ledger.Account
 |> YourApp.Ledger.get!(account_id, load: :balance)
 |> Map.get(:balance)
 # => Decimal.new("20")
