@@ -1,5 +1,4 @@
 import Config
-config :ash, :use_all_identities_in_manage_relationship?, false
 
 if Mix.env() == :dev do
   config :git_ops,
