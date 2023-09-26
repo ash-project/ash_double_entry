@@ -1,7 +1,6 @@
 defmodule AshDoubleEntry.Balance.Transformers.AddStructure do
-  @moduledoc """
-  Adds all the structure required for the resource. See the getting started guide for more.
-  """
+  # Adds all the structure required for the resource. See the getting started guide for more.
+  @moduledoc false
   use Spark.Dsl.Transformer
   import Spark.Dsl.Builder
 

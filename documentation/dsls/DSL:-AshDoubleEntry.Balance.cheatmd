@@ -1,0 +1,25 @@
+# DSL: AshDoubleEntry.Balance
+
+An extension for creating a double entry ledger balance. See the getting started guide for more.
+
+
+## balance
+
+
+
+
+
+
+
+### Options
+| Name | Type | Default | Docs |
+| ---  | ---  | ---     | ---  |
+| `transfer_resource`* | `module` |  | The resource used for transfers |
+| `account_resource`* | `module` |  | The resource used for accounts |
+| `pre_check_identities_with` | `module` |  | An api to use to precheck generated identities. Required by certain data layers. |
+
+
+
+
+
+

@@ -1,7 +1,6 @@
 defmodule AshDoubleEntry.Account.Calculations.BalanceAsOfUlid do
-  @moduledoc """
-  Calculates the balance as of a given transfer id. See the getting started guide for more.
-  """
+  # Calculates the balance as of a given transfer id. See the getting started guide for more.
+  @moduledoc false
   use Ash.Calculation
   require Ash.Expr
 

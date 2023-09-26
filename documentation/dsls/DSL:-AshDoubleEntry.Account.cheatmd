@@ -1,0 +1,26 @@
+# DSL: AshDoubleEntry.Account
+
+An extension for creating a double entry ledger account. See the getting started guide for more.
+
+
+## account
+
+
+
+
+
+
+
+### Options
+| Name | Type | Default | Docs |
+| ---  | ---  | ---     | ---  |
+| `transfer_resource`* | `module` |  | The resource used for transfers |
+| `balance_resource`* | `module` |  | The resource used for balances |
+| `open_action_accept` | `list(atom)` | `[]` | A list of extra attributes to be accepted by the open action. The `identifier` and `currency` attributes are always accepted. |
+| `pre_check_identities_with` | `module` |  | An api to use to precheck generated identities. Required by certain data layers. |
+
+
+
+
+
+

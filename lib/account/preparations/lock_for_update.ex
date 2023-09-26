@@ -1,5 +1,6 @@
 defmodule AshDoubleEntry.Account.Preparations.LockForUpdate do
-  @moduledoc "Locks the results of the query for update"
+  # Locks the results of the query for update
+  @moduledoc false
   use Ash.Resource.Preparation
 
   def prepare(query, _, _) do

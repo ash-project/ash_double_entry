@@ -1,10 +1,10 @@
 defmodule AshDoubleEntry.Transfer.Changes.VerifyTransfer do
-  @moduledoc """
-  Verify a transfer and update all related balances of the accounts involved.
+  # Verify a transfer and update all related balances of the accounts involved.
 
-  This operation locks the accounts involved, serializing all transfers between
-  relevant accounts.
-  """
+  # This operation locks the accounts involved, serializing all transfers between
+  # relevant accounts.
+
+  @moduledoc false
   use Ash.Resource.Change
   require Ash.Query
 
