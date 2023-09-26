@@ -9,8 +9,7 @@ defmodule AshDoubleEntry.Account do
       open_action_accept: [
         type: {:list, :atom},
         doc: """
-        A list of extra attributes to be accepted by the open action.
-        The `identifier` and `currency` attributes are always accepted.
+        A list of extra attributes to be accepted by the open action. The `identifier` and `currency` attributes are always accepted.
         """,
         default: []
       ],
