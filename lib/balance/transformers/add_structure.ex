@@ -5,6 +5,7 @@ defmodule AshDoubleEntry.Balance.Transformers.AddStructure do
   import Spark.Dsl.Builder
 
   def before?(Ash.Resource.Transformers.CachePrimaryKey), do: true
+  def before?(Ash.Resource.Transformers.BelongsToAttribute), do: true
   def before?(_), do: false
 
   def transform(dsl) do

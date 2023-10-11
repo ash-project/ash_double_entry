@@ -4,6 +4,7 @@ defmodule AshDoubleEntry.Account.Transformers.AddStructure do
   use Spark.Dsl.Transformer
   import Spark.Dsl.Builder
 
+  def before?(Ash.Resource.Transformers.BelongsToAttribute), do: true
   def before?(Ash.Resource.Transformers.CachePrimaryKey), do: true
   def before?(_), do: false
 
