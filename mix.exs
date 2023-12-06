@@ -172,7 +172,9 @@ defmodule AshDoubleEntry.MixProject do
   # Run "mix help deps" to learn about dependencies.
   defp deps do
     [
-      {:ash, ash_version("~> 2.14")},
+      {:ash, ash_version("~> 2.17 and >= 2.17.8")},
+      {:ash_money, "~> 0.1.3"},
+      {:ex_money_sql, "~> 1.10"},
       {:git_ops, "~> 2.5", only: [:dev, :test]},
       {:ex_doc, github: "elixir-lang/ex_doc", only: [:dev, :test], runtime: false},
       {:ex_check, "~> 0.14", only: [:dev, :test]},

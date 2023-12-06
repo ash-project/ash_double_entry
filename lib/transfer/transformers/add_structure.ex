@@ -16,7 +16,7 @@ defmodule AshDoubleEntry.Transfer.Transformers.AddStructure do
       default: &AshDoubleEntry.ULID.generate/0,
       generated?: false
     )
-    |> Ash.Resource.Builder.add_attribute(:amount, :decimal, allow_nil?: false)
+    |> Ash.Resource.Builder.add_attribute(:amount, AshMoney.Types.Money, allow_nil?: false)
     |> Ash.Resource.Builder.add_attribute(:timestamp, :utc_datetime_usec,
       allow_nil?: false,
       default: &DateTime.utc_now/0

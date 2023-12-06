@@ -16,3 +16,7 @@ def deps do
   ]
 end
 ```
+
+# Upgrading from 0.1 to 0.2
+
+This is a breaking change, that changes from using a currency & decimal amount to using `ash_money`. There is no way to configure it to use the old behavior, as maintaining both is not reasonable.

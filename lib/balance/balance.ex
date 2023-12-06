@@ -19,6 +19,11 @@ defmodule AshDoubleEntry.Balance do
         type: {:spark, Ash.Resource},
         doc: "The resource used for accounts",
         required: true
+      ],
+      money_composite_type?: [
+        type: :boolean,
+        doc: "Whether the balance is stored as a composite type.",
+        default: true
       ]
     ]
   }

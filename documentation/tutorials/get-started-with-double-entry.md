@@ -10,6 +10,10 @@ Ash Double Entry is implemented as a set of Ash resource extensions. You build t
 
 ## Setup
 
+### Setup AshMoney
+
+Follow the setup guide for `AshMoney`. If you are using with `AshPostgres`, be sure to include the `:ex_money_sql` dependency in your `mix.exs`.
+
 ### Define your account resource
 
 #### Example
@@ -46,7 +50,7 @@ end
 
 - Adds the following attributes:
   - `:id`, a `:uuid` primary key
-  - `:currency`, a `:string` representing the currency of the transfer
+  - `:currency`, a `:string` representing the currency of the account.
   - `:inserted_at`, a `:utc_datetime_usec` timestamp
   - `:identifier`, a `:string` and a unique identifier for the account
 - Adds the following actions:
@@ -56,8 +60,7 @@ end
 - Adds a `has_many` relationship called `balances`, referring to all related balances of an account
 - Adds an aggregate called `balance`, referring to the latest balance as a `decimal` for that account
 - Adds the following calculations:
- - A `balance_as_of_ulid` calculation that takes an argument called `ulid`, which corresponds to a transfer id and returns the balance as a
- decimal.
+ - A `balance_as_of_ulid` calculation that takes an argument called `ulid`, which corresponds to a transfer id and returns the balance.
  - A `balance_as_of` calculation that takes a `utc_datetime_usec` and returns the balance as of that datetime.
 - Adds an identity called `unique_identifier` that ensures `identifier` is unique.
 
@@ -88,7 +91,7 @@ end
 
 - Adds the following attributes
   - `:id`, a `AshDoubleEntry.ULID` primary key which is sortable based on the `timestamp` of the transfer.
-  - `:amount`, a `:decimal` representing the amount of the transfer
+  - `:amount`, a `AshMoney.Types.Money` representing the amount and currency of the transfer
   - `:timestamp`, a `:utc_datetime_usec` representing when the transfer occurred
   - `:inserted_at`, a `:utc_datetime_usec` timestamp
 - Adds the following relationships
@@ -126,7 +129,8 @@ defmodule YourApp.Ledger.Balance do
   defp validate_balance(changeset, result) do
     account = result |> changeset.api.load!(:account) |> Map.get(:account)
 
-    if account.allow_zero_balance == false && Decimal.negative?(result.balance) do
+    if account.allow_zero_balance == false && Money.negative?(result.balance) do
+
       {:error,
         Ash.Error.Changes.InvalidAttribute.exception(
           value: result.balance,
@@ -187,7 +191,7 @@ And add the API to your config
 
 ```elixir
 YourApp.Ledger.Account
-|> Ash.Changeset.for_create(:open, %{identifier: "account_one", currency: "USD"})
+|> Ash.Changeset.for_create(:open, %{identifier: "account_one"})
 |> YourApp.Ledger.create!()
 ```
 
@@ -196,7 +200,7 @@ YourApp.Ledger.Account
 ```elixir
 YourApp.Ledger.Transfer
 |> Ash.Changeset.for_create(:transfer, %{
-  amount: Decimal.new(20),
+  amount: Money.new!(20, :USD),
   from_account_id: account_one.id,
   to_account_id: account_two.id
 })
@@ -209,7 +213,7 @@ YourApp.Ledger.Transfer
 YourApp.Ledger.Account
 |> YourApp.Ledger.get!(account_id, load: :balance)
 |> Map.get(:balance)
-# => Decimal.new("20")
+# => Money.new!(20, :USD)
 ```
 
 ## What else can you do?

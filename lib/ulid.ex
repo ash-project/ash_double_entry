@@ -64,7 +64,15 @@ defmodule AshDoubleEntry.ULID do
 
   * `timestamp`: A Unix timestamp with millisecond precision.
   """
-  def generate(timestamp \\ System.system_time(:millisecond)) do
+  def generate(timestamp \\ System.system_time(:millisecond))
+
+  def generate(%DateTime{} = datetime) do
+    datetime
+    |> DateTime.to_unix(:millisecond)
+    |> generate()
+  end
+
+  def generate(timestamp) do
     {:ok, ulid} = encode(bingenerate(timestamp))
     ulid
   end

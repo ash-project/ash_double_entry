@@ -41,11 +41,6 @@ defmodule AshDoubleEntry.Account.Transformers.AddStructure do
       allow_nil?: false,
       default: &DateTime.utc_now/0
     )
-    |> Ash.Resource.Builder.add_aggregate(:balance, :first, [:balances],
-      field: :balance,
-      default: Decimal.new(0),
-      sort: [transfer_id: :desc]
-    )
     |> Ash.Resource.Builder.add_relationship(
       :has_many,
       :balances,
@@ -63,7 +58,7 @@ defmodule AshDoubleEntry.Account.Transformers.AddStructure do
     Ash.Resource.Builder.add_calculation(
       dsl,
       :balance_as_of_ulid,
-      :decimal,
+      AshMoney.Types.Money,
       {AshDoubleEntry.Account.Calculations.BalanceAsOfUlid,
        [resource: Spark.Dsl.Transformer.get_persisted(dsl, :module)]},
       private?: true,
@@ -81,15 +76,16 @@ defmodule AshDoubleEntry.Account.Transformers.AddStructure do
     Ash.Resource.Builder.add_calculation(
       dsl,
       :balance_as_of,
-      :decimal,
-      {AshDoubleEntry.Account.Calculations.BalanceAsOfUlid,
+      AshMoney.Types.Money,
+      {AshDoubleEntry.Account.Calculations.BalanceAsOf,
        [resource: Spark.Dsl.Transformer.get_persisted(dsl, :module)]},
       private?: true,
       arguments: [
         Ash.Resource.Builder.build_calculation_argument(
           :timestamp,
           :utc_datetime_usec,
-          allow_nil?: false
+          allow_nil?: false,
+          default: &DateTime.utc_now/0
         )
       ]
     )

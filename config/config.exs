@@ -17,6 +17,7 @@ end
 if config_env() == :test do
   config :ash, :validate_api_resource_inclusion?, false
   config :ash, :validate_api_config_inclusion?, false
+  config :ash, :disable_async?, true
 end
 
 config :spark, :formatter,
