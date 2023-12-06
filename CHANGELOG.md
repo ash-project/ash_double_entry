@@ -5,6 +5,27 @@ See [Conventional Commits](Https://conventionalcommits.org) for commit guideline
 
 <!-- changelog -->
 
+## [v0.2.0](https://github.com/ash-project/ash_double_entry/compare/v0.1.2...v0.2.0) (2023-12-06)
+
+
+
+
+### Features:
+
+* use AshMoney
+
+### Bug Fixes:
+
+* ensure transformers run before `BelongsToAttribute`
+
+* update ash for fix
+
+### Improvements:
+
+* migrate to AshMoney
+
+* update ash
+
 ## [v0.1.2](https://github.com/ash-project/ash_double_entry/compare/v0.1.1...v0.1.2) (2023-08-19)
 
 - Documentation updates & AshHq indexing fixes
