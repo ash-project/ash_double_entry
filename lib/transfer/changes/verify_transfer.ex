@@ -34,7 +34,7 @@ defmodule AshDoubleEntry.Transfer.Changes.VerifyTransfer do
         |> Ash.Query.filter(id in ^[from_account_id, to_account_id])
         |> Ash.Query.for_read(:lock_accounts)
         |> Ash.Query.load(balance_as_of_ulid: %{ulid: result.id})
-        |> changeset.api.read!(authorize?: false, tracer: context[:tracer])
+        |> changeset.api.read!(context_to_opts(context, authorize?: false))
 
       from_account = Enum.find(accounts, &(&1.id == from_account_id))
       to_account = Enum.find(accounts, &(&1.id == to_account_id))
@@ -80,7 +80,7 @@ defmodule AshDoubleEntry.Transfer.Changes.VerifyTransfer do
       |> AshDoubleEntry.Transfer.Info.transfer_balance_resource!()
       |> Ash.Query.filter(account_id in ^[from_account.id, to_account.id])
       |> Ash.Query.filter(transfer_id > ^result.id)
-      |> changeset.api.stream!()
+      |> changeset.api.stream!(context_to_opts(context))
       |> Stream.map(fn balance ->
         if balance.account_id == from_account.id do
           %{
