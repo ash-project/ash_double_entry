@@ -40,10 +40,13 @@ defmodule AshDoubleEntry.Transfer.Changes.VerifyTransfer do
       to_account = Enum.find(accounts, &(&1.id == to_account_id))
 
       new_from_account_balance =
-        Decimal.sub(from_account.balance_as_of_ulid, amount)
+        Money.sub!(
+          from_account.balance_as_of_ulid || Money.new!(0, from_account.currency),
+          amount
+        )
 
       new_to_account_balance =
-        Decimal.add(to_account.balance_as_of_ulid, amount)
+        Money.add!(to_account.balance_as_of_ulid || Money.new!(0, to_account.currency), amount)
 
       changeset.resource
       |> AshDoubleEntry.Transfer.Info.transfer_balance_resource!()
@@ -83,13 +86,13 @@ defmodule AshDoubleEntry.Transfer.Changes.VerifyTransfer do
           %{
             account_id: balance.account_id,
             transfer_id: balance.transfer_id,
-            balance: Decimal.sub(balance.balance, amount)
+            balance: Money.sub(balance.balance, amount)
           }
         else
           %{
             account_id: balance.account_id,
             transfer_id: balance.transfer_id,
-            balance: Decimal.add(balance.balance, amount)
+            balance: Money.add(balance.balance, amount)
           }
         end
       end)

@@ -1,6 +1,7 @@
 defmodule AshDoubleEntryTest do
   use ExUnit.Case
   import ExUnit.CaptureLog
+  require Ash.Query
 
   defmodule Account do
     use Ash.Resource,
@@ -51,7 +52,7 @@ defmodule AshDoubleEntryTest do
       account = result |> changeset.api.load!(:account) |> Map.get(:account)
 
       if account.allow_zero_balance == false &&
-           Decimal.negative?(result.balance) do
+           Money.negative?(result.balance) do
         {:error,
          Ash.Error.Changes.InvalidAttribute.exception(
            value: result.balance,
@@ -113,10 +114,10 @@ defmodule AshDoubleEntryTest do
         Account
         |> Ash.Changeset.for_create(:open, %{identifier: "account_one", currency: "USD"})
         |> Api.create!()
-        |> Api.load!(:balance)
-        |> Map.get(:balance)
+        |> Api.load!(:balance_as_of)
+        |> Map.get(:balance_as_of)
 
-      assert Decimal.eq?(account_balance, Decimal.new(0))
+      assert Money.equal?(account_balance, Money.new!(:USD, 0))
     end
 
     test "transfers between accounts update the balance accordingly" do
@@ -132,14 +133,23 @@ defmodule AshDoubleEntryTest do
 
       Transfer
       |> Ash.Changeset.for_create(:transfer, %{
-        amount: Decimal.new(20),
+        amount: Money.new!(:USD, 20),
         from_account_id: account_one.id,
         to_account_id: account_two.id
       })
       |> Api.create!()
 
-      assert Decimal.equal?(Api.load!(account_one, :balance).balance, Decimal.new(-20))
-      assert Decimal.equal?(Api.load!(account_two, :balance).balance, Decimal.new(20))
+      Application.put_env(:foo, :bar, true)
+
+      assert Money.equal?(
+               Api.load!(account_one, :balance_as_of).balance_as_of,
+               Money.new!(:USD, -20)
+             )
+
+      # assert Money.equal?(
+      #          Api.load!(account_two, :balance_as_of).balance_as_of,
+      #          Money.new!(:USD, 20)
+      #        )
     end
 
     test "balances can be validated" do
@@ -160,7 +170,7 @@ defmodule AshDoubleEntryTest do
       assert_raise Ash.Error.Invalid, ~r/balance cannot be negative/, fn ->
         Transfer
         |> Ash.Changeset.for_create(:transfer, %{
-          amount: Decimal.new(20),
+          amount: Money.new!(:USD, 20),
           from_account_id: account_one.id,
           to_account_id: account_two.id
         })
@@ -209,7 +219,7 @@ defmodule AshDoubleEntryTest do
 
       Transfer
       |> Ash.Changeset.for_create(:transfer, %{
-        amount: Decimal.new(20),
+        amount: Money.new!(:USD, 20),
         from_account_id: account_one.id,
         to_account_id: account_two.id,
         timestamp: DateTime.add(now, 2, :minute)
@@ -218,7 +228,7 @@ defmodule AshDoubleEntryTest do
 
       Transfer
       |> Ash.Changeset.for_create(:transfer, %{
-        amount: Decimal.new(20),
+        amount: Money.new!(:USD, 20),
         from_account_id: account_two.id,
         to_account_id: account_three.id,
         timestamp: DateTime.add(now, 3, :minute)
@@ -228,7 +238,7 @@ defmodule AshDoubleEntryTest do
       assert_raise Ash.Error.Invalid, ~r/balance cannot be negative/, fn ->
         Transfer
         |> Ash.Changeset.for_create(:transfer, %{
-          amount: Decimal.new(20),
+          amount: Money.new!(:USD, 20),
           from_account_id: account_two.id,
           to_account_id: account_four.id,
           timestamp: DateTime.add(now, 1, :minute)

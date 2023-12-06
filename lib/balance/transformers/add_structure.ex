@@ -9,6 +9,13 @@ defmodule AshDoubleEntry.Balance.Transformers.AddStructure do
   def before?(_), do: false
 
   def transform(dsl) do
+    storage_type =
+      if AshDoubleEntry.Balance.Info.balance_money_composite_type?(dsl) do
+        :money_with_currency
+      else
+        :map
+      end
+
     dsl
     |> Ash.Resource.Builder.add_attribute(:id, :uuid,
       primary_key?: true,
@@ -17,7 +24,12 @@ defmodule AshDoubleEntry.Balance.Transformers.AddStructure do
       allow_nil?: false,
       default: &Ash.UUID.generate/0
     )
-    |> Ash.Resource.Builder.add_attribute(:balance, :decimal, allow_nil?: false)
+    |> Ash.Resource.Builder.add_attribute(:balance, AshMoney.Types.Money,
+      allow_nil?: false,
+      constraints: [
+        storage_type: storage_type
+      ]
+    )
     |> Ash.Resource.Builder.add_relationship(
       :belongs_to,
       :transfer,
