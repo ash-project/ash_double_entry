@@ -86,13 +86,13 @@ defmodule AshDoubleEntry.Transfer.Changes.VerifyTransfer do
           %{
             account_id: balance.account_id,
             transfer_id: balance.transfer_id,
-            balance: Money.sub(balance.balance, amount)
+            balance: Money.sub!(balance.balance, amount)
           }
         else
           %{
             account_id: balance.account_id,
             transfer_id: balance.transfer_id,
-            balance: Money.add(balance.balance, amount)
+            balance: Money.add!(balance.balance, amount)
           }
         end
       end)
