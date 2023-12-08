@@ -32,7 +32,7 @@ defmodule AshDoubleEntry.Transfer.Changes.VerifyTransfer do
         changeset.resource
         |> AshDoubleEntry.Transfer.Info.transfer_account_resource!()
         |> Ash.Query.filter(id in ^[from_account_id, to_account_id])
-        |> Ash.Query.for_read(:lock_accounts)
+        |> Ash.Query.for_read(:lock_accounts, context_to_opts(context, authorize?: false))
         |> Ash.Query.load(balance_as_of_ulid: %{ulid: result.id})
         |> changeset.api.read!(context_to_opts(context, authorize?: false))
 
