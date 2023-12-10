@@ -31,6 +31,10 @@ defmodule AshDoubleEntryTest do
       account_resource Account
       balance_resource AshDoubleEntryTest.Balance
     end
+
+    actions do
+      defaults [:destroy]
+    end
   end
 
   defmodule Balance do
@@ -42,6 +46,10 @@ defmodule AshDoubleEntryTest do
       pre_check_identities_with AshDoubleEntryTest.Api
       transfer_resource Transfer
       account_resource Account
+    end
+
+    actions do
+      defaults [:destroy]
     end
 
     changes do
@@ -139,17 +147,47 @@ defmodule AshDoubleEntryTest do
       })
       |> Api.create!()
 
-      Application.put_env(:foo, :bar, true)
-
       assert Money.equal?(
                Api.load!(account_one, :balance_as_of).balance_as_of,
                Money.new!(:USD, -20)
              )
 
-      # assert Money.equal?(
-      #          Api.load!(account_two, :balance_as_of).balance_as_of,
-      #          Money.new!(:USD, 20)
-      #        )
+      assert Money.equal?(
+               Api.load!(account_two, :balance_as_of).balance_as_of,
+               Money.new!(:USD, 20)
+             )
+    end
+
+    test "destroying transfers update the balances accordingly" do
+      account_one =
+        Account
+        |> Ash.Changeset.for_create(:open, %{identifier: "account_one", currency: "USD"})
+        |> Api.create!()
+
+      account_two =
+        Account
+        |> Ash.Changeset.for_create(:open, %{identifier: "account_two", currency: "USD"})
+        |> Api.create!()
+
+      Transfer
+      |> Ash.Changeset.for_create(:transfer, %{
+        amount: Money.new!(:USD, 20),
+        from_account_id: account_one.id,
+        to_account_id: account_two.id
+      })
+      |> Api.create!()
+      |> Ash.Changeset.for_destroy(:destroy)
+      |> Api.destroy!()
+
+      assert Money.equal?(
+               Api.load!(account_one, :balance_as_of).balance_as_of,
+               Money.new!(:USD, 0)
+             )
+
+      assert Money.equal?(
+               Api.load!(account_two, :balance_as_of).balance_as_of,
+               Money.new!(:USD, 0)
+             )
     end
 
     test "balances can be validated" do

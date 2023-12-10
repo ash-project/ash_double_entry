@@ -9,6 +9,10 @@ defmodule AshDoubleEntry.Transfer.Changes.VerifyTransfer do
   require Ash.Query
 
   def change(changeset, _opts, context) do
+    if changeset.action.type == :update do
+      raise "Cannot update transfers currently"
+    end
+
     changeset
     |> Ash.Changeset.before_action(fn changeset ->
       timestamp = Ash.Changeset.get_attribute(changeset, :timestamp)
@@ -23,6 +27,7 @@ defmodule AshDoubleEntry.Transfer.Changes.VerifyTransfer do
 
       Ash.Changeset.force_change_attribute(changeset, :id, ulid)
     end)
+    |> maybe_destroy_balances(context)
     |> Ash.Changeset.after_action(fn changeset, result ->
       from_account_id = Ash.Changeset.get_attribute(changeset, :from_account_id)
       to_account_id = Ash.Changeset.get_attribute(changeset, :to_account_id)
@@ -48,32 +53,34 @@ defmodule AshDoubleEntry.Transfer.Changes.VerifyTransfer do
       new_to_account_balance =
         Money.add!(to_account.balance_as_of_ulid || Money.new!(0, to_account.currency), amount)
 
-      changeset.resource
-      |> AshDoubleEntry.Transfer.Info.transfer_balance_resource!()
-      |> Ash.Changeset.for_create(
-        :upsert_balance,
-        %{
-          account_id: from_account.id,
-          transfer_id: result.id,
-          balance: new_from_account_balance,
-          account: from_account
-        },
-        context_to_opts(context)
-      )
-      |> changeset.api.create!()
+      unless changeset.action.type == :destroy do
+        changeset.resource
+        |> AshDoubleEntry.Transfer.Info.transfer_balance_resource!()
+        |> Ash.Changeset.for_create(
+          :upsert_balance,
+          %{
+            account_id: from_account.id,
+            transfer_id: result.id,
+            balance: new_from_account_balance,
+            account: from_account
+          },
+          context_to_opts(context)
+        )
+        |> changeset.api.create!()
 
-      changeset.resource
-      |> AshDoubleEntry.Transfer.Info.transfer_balance_resource!()
-      |> Ash.Changeset.for_create(
-        :upsert_balance,
-        %{
-          account_id: to_account.id,
-          transfer_id: result.id,
-          balance: new_to_account_balance
-        },
-        context_to_opts(context)
-      )
-      |> changeset.api.create!()
+        changeset.resource
+        |> AshDoubleEntry.Transfer.Info.transfer_balance_resource!()
+        |> Ash.Changeset.for_create(
+          :upsert_balance,
+          %{
+            account_id: to_account.id,
+            transfer_id: result.id,
+            balance: new_to_account_balance
+          },
+          context_to_opts(context)
+        )
+        |> changeset.api.create!()
+      end
 
       # Turn this into a bulk update when we support it in Ash core
       changeset.resource
@@ -82,7 +89,7 @@ defmodule AshDoubleEntry.Transfer.Changes.VerifyTransfer do
       |> Ash.Query.filter(transfer_id > ^result.id)
       |> changeset.api.stream!(context_to_opts(context))
       |> Stream.map(fn balance ->
-        if balance.account_id == from_account.id do
+        if changeset.action.type == :destroy && balance.account_id == from_account.id do
           %{
             account_id: balance.account_id,
             transfer_id: balance.transfer_id,
@@ -108,6 +115,38 @@ defmodule AshDoubleEntry.Transfer.Changes.VerifyTransfer do
 
       {:ok, result}
     end)
+  end
+
+  defp maybe_destroy_balances(changeset, context) do
+    if changeset.action.type == :destroy do
+      balance_resource =
+        changeset.resource
+        |> AshDoubleEntry.Transfer.Info.transfer_balance_resource!()
+
+      destroy_action = Ash.Resource.Info.primary_action(balance_resource, :destroy)
+
+      if !destroy_action do
+        raise "Must configure a primary destroy action for #{inspect(balance_resource)} to destroy transactions"
+      end
+
+      Ash.Changeset.before_action(changeset, fn changeset ->
+        balance_resource
+        |> Ash.Query.filter(transfer_id == ^changeset.data.id)
+        |> changeset.api.stream!(context_to_opts(context, authorize?: false))
+        |> Enum.each(fn balance ->
+          balance
+          |> Ash.Changeset.for_destroy(
+            destroy_action,
+            context_to_opts(context, authorize?: false)
+          )
+          |> changeset.api.destroy!()
+        end)
+
+        changeset
+      end)
+    else
+      changeset
+    end
   end
 
   defp context_to_opts(context, opts \\ []) do
