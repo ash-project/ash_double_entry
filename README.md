@@ -12,7 +12,7 @@ The package can be installed by adding `ash_double_entry` to your list of depend
 ```elixir
 def deps do
   [
-    {:ash_double_entry, "~> 0.2.0"}
+    {:ash_double_entry, "~> 0.2.1"}
   ]
 end
 ```

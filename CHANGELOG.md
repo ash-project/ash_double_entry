@@ -5,6 +5,23 @@ See [Conventional Commits](Https://conventionalcommits.org) for commit guideline
 
 <!-- changelog -->
 
+## [v0.2.1](https://github.com/ash-project/ash_double_entry/compare/v0.2.0...v0.2.1) (2023-12-10)
+
+
+
+
+### Bug Fixes:
+
+* use Money..add! For correct return
+
+* properly set context on account read in balance verification
+
+### Improvements:
+
+* support destroying transfers
+
+* set `context_to_opts` when constructing the query
+
 ## [v0.2.0](https://github.com/ash-project/ash_double_entry/compare/v0.1.2...v0.2.0) (2023-12-06)
 
 
