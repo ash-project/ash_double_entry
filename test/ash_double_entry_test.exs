@@ -33,7 +33,7 @@ defmodule AshDoubleEntryTest do
     end
 
     actions do
-      defaults [:destroy]
+      defaults [:destroy, :update]
     end
   end
 
@@ -187,6 +187,38 @@ defmodule AshDoubleEntryTest do
       assert Money.equal?(
                Api.load!(account_two, :balance_as_of).balance_as_of,
                Money.new!(:USD, 0)
+             )
+    end
+
+    test "updating transfer's amount update the balances accordingly" do
+      account_one =
+        Account
+        |> Ash.Changeset.for_create(:open, %{identifier: "account_one", currency: "USD"})
+        |> Api.create!()
+
+      account_two =
+        Account
+        |> Ash.Changeset.for_create(:open, %{identifier: "account_two", currency: "USD"})
+        |> Api.create!()
+
+      Transfer
+      |> Ash.Changeset.for_create(:transfer, %{
+        amount: Money.new!(:USD, 20),
+        from_account_id: account_one.id,
+        to_account_id: account_two.id
+      })
+      |> Api.create!()
+      |> Ash.Changeset.for_update(:update, %{amount: Money.new!(:USD, 10)})
+      |> Api.update!()
+
+      assert Money.equal?(
+               Api.load!(account_one, :balance_as_of).balance_as_of,
+               Money.new!(:USD, -10)
+             )
+
+      assert Money.equal?(
+               Api.load!(account_two, :balance_as_of).balance_as_of,
+               Money.new!(:USD, 10)
              )
     end
 
