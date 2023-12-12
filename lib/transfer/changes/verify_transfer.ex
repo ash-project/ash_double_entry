@@ -9,38 +9,42 @@ defmodule AshDoubleEntry.Transfer.Changes.VerifyTransfer do
   require Ash.Query
 
   def change(changeset, _opts, context) do
-    if changeset.action.type == :update do
-      if Enum.any?(
-           [:from_account_id, :to_account_id, :amount, :id],
+    if changeset.action.type == :update and
+         Enum.any?(
+           [:from_account_id, :to_account_id, :id],
            &Ash.Changeset.changing_attribute?(changeset, &1)
          ) do
-        Ash.Changeset.add_error(
-          changeset,
-          "Cannot modify a transfer's from_account_id, to_account_id, amount, or id"
-        )
-      else
-        changeset
-      end
+      Ash.Changeset.add_error(
+        changeset,
+        "Cannot modify a transfer's from_account_id, to_account_id, or id"
+      )
     else
       changeset
       |> Ash.Changeset.before_action(fn changeset ->
-        timestamp = Ash.Changeset.get_attribute(changeset, :timestamp)
+        if changeset.action.type == :create do
+          timestamp = Ash.Changeset.get_attribute(changeset, :timestamp)
 
-        timestamp =
-          case timestamp do
-            nil -> System.system_time(:millisecond)
-            timestamp -> DateTime.to_unix(timestamp, :millisecond)
-          end
+          timestamp =
+            case timestamp do
+              nil -> System.system_time(:millisecond)
+              timestamp -> DateTime.to_unix(timestamp, :millisecond)
+            end
 
-        ulid = AshDoubleEntry.ULID.generate(timestamp)
+          ulid = AshDoubleEntry.ULID.generate(timestamp)
 
-        Ash.Changeset.force_change_attribute(changeset, :id, ulid)
+          Ash.Changeset.force_change_attribute(changeset, :id, ulid)
+        else
+          changeset
+        end
       end)
       |> maybe_destroy_balances(context)
       |> Ash.Changeset.after_action(fn changeset, result ->
         from_account_id = Ash.Changeset.get_attribute(changeset, :from_account_id)
         to_account_id = Ash.Changeset.get_attribute(changeset, :to_account_id)
         amount = Ash.Changeset.get_attribute(changeset, :amount)
+
+        amount_delta =
+          Money.sub!(amount, changeset.data.amount || Money.new!(0, amount.currency))
 
         accounts =
           changeset.resource
@@ -56,11 +60,14 @@ defmodule AshDoubleEntry.Transfer.Changes.VerifyTransfer do
         new_from_account_balance =
           Money.sub!(
             from_account.balance_as_of_ulid || Money.new!(0, from_account.currency),
-            amount
+            amount_delta
           )
 
         new_to_account_balance =
-          Money.add!(to_account.balance_as_of_ulid || Money.new!(0, to_account.currency), amount)
+          Money.add!(
+            to_account.balance_as_of_ulid || Money.new!(0, to_account.currency),
+            amount_delta
+          )
 
         unless changeset.action.type == :destroy do
           changeset.resource
@@ -102,13 +109,13 @@ defmodule AshDoubleEntry.Transfer.Changes.VerifyTransfer do
             %{
               account_id: balance.account_id,
               transfer_id: balance.transfer_id,
-              balance: Money.sub!(balance.balance, amount)
+              balance: Money.sub!(balance.balance, amount_delta)
             }
           else
             %{
               account_id: balance.account_id,
               transfer_id: balance.transfer_id,
-              balance: Money.add!(balance.balance, amount)
+              balance: Money.add!(balance.balance, amount_delta)
             }
           end
         end)
