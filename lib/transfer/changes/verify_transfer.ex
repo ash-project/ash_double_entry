@@ -21,7 +21,7 @@ defmodule AshDoubleEntry.Transfer.Changes.VerifyTransfer do
     else
       changeset
       |> Ash.Changeset.before_action(fn changeset ->
-        if changeset.action.type != :update do
+        if changeset.action.type == :create do
           timestamp = Ash.Changeset.get_attribute(changeset, :timestamp)
 
           timestamp =
