@@ -172,7 +172,7 @@ defmodule AshDoubleEntry.MixProject do
   # Run "mix help deps" to learn about dependencies.
   defp deps do
     [
-      {:ash, ash_version("~> 2.17 and >= 2.17.8")},
+      {:ash, ash_version("~> 2.17 and >= 2.17.17")},
       {:ash_money, "~> 0.1.3"},
       {:ex_money_sql, "~> 1.10"},
       {:git_ops, "~> 2.5", only: [:dev, :test]},

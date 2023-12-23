@@ -14,14 +14,14 @@ defmodule AshDoubleEntry.Account.Calculations.BalanceAsOfUlid do
         first(balances,
           field: :balance,
           query: [sort: [transfer_id: :desc], filter: [transfer_id: [lte: context[:ulid]]]]
-        ) || composite_type(%{currency: ref(:currency), amount: 0}, AshMoney.Types.Money)
+        ) || composite_type(%{currency: currency, amount: 0}, AshMoney.Types.Money)
       )
     else
       Ash.Expr.expr(
         first(balances,
           field: :balance,
           query: [sort: [transfer_id: :desc], filter: [transfer_id: [lte: context[:ulid]]]]
-        ) || %{currency: ref(:currency), amount: 0}
+        ) || %{currency: currency, amount: 0}
       )
     end
   end

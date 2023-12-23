@@ -66,7 +66,8 @@ defmodule AshDoubleEntry.Account.Transformers.AddStructure do
         Ash.Resource.Builder.build_calculation_argument(
           :ulid,
           AshDoubleEntry.ULID,
-          allow_nil?: false
+          allow_nil?: false,
+          allow_expr?: true
         )
       ]
     )

@@ -5,8 +5,16 @@ defmodule AshDoubleEntry.Account.Calculations.BalanceAsOf do
   require Ash.Expr
 
   def expression(opts, context) do
-    ulid = AshDoubleEntry.ULID.generate(context.timestamp)
+    Ash.Expr.expr(
+      balance_as_of_ulid(
+        ulid: Ash.Expr.expr(lazy({__MODULE__, :ulid, [context.timestamp]})),
+        resource: opts[:resource]
+      )
+    )
+  end
 
-    Ash.Expr.expr(balance_as_of_ulid(ulid: ulid, resource: opts[:resource]))
+  @doc false
+  def ulid(timestamp) do
+    AshDoubleEntry.ULID.generate(timestamp)
   end
 end
