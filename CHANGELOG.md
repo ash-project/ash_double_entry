@@ -5,6 +5,19 @@ See [Conventional Commits](Https://conventionalcommits.org) for commit guideline
 
 <!-- changelog -->
 
+## [v0.2.3](https://github.com/ash-project/ash_double_entry/compare/v0.2.2...v0.2.3) (2023-12-23)
+
+
+
+
+### Bug Fixes:
+
+* make expression pure
+
+### Improvements:
+
+* support updating transfer's amount (#8)
+
 ## [v0.2.2](https://github.com/ash-project/ash_double_entry/compare/v0.2.1...v0.2.2) (2023-12-10)
 
 
