@@ -211,8 +211,8 @@ YourApp.Ledger.Transfer
 
 ```elixir
 YourApp.Ledger.Account
-|> YourApp.Ledger.get!(account_id, load: :balance)
-|> Map.get(:balance)
+|> YourApp.Ledger.get!(account_id, load: :balance_as_of)
+|> Map.get(:balance_as_of)
 # => Money.new!(20, :USD)
 ```
 
