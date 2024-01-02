@@ -121,6 +121,14 @@ defmodule YourApp.Ledger.Balance do
     account_resource YourApp.Ledger.Account
   end
 
+  actions do
+    read :read do
+      primary? true
+      # configure keyset pagination for streaming
+      pagination keyset?: true, required?: false
+    end
+  end
+
   changes do
     # add custom behavior. In this case, we're preventing certain balances from being less than zero
     change after_action(&validate_balance/2)
@@ -155,6 +163,7 @@ end
 - Adds the following actions:
   - a primary read action called `:read`, if a priamry read action doesn't
   exist
+  - configure primary read action to have keyset pagination enabled
   - a create action caleld `:upsert_balance`, which will create or update the relevant balance, by `transfer_id` and `account_id`
 - Adds an identity that ensures that `account_id` and `transfer_id` are unique
 
