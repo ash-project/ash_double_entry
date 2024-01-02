@@ -125,7 +125,7 @@ defmodule YourApp.Ledger.Balance do
     read :read do
       primary? true
       # configure keyset pagination for streaming
-      pagination keyset?: true
+      pagination keyset?: true, required?: false
     end
   end
 
