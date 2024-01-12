@@ -62,56 +62,11 @@ defmodule AshDoubleEntry.MixProject do
     ]
   end
 
-  defp extras() do
-    "documentation/**/*.{md,livemd,cheatmd}"
-    |> Path.wildcard()
-    |> Enum.map(fn path ->
-      title =
-        path
-        |> Path.basename(".md")
-        |> Path.basename(".cheatmd")
-        |> Path.basename(".livemd")
-        |> String.split(~r/[-_]/)
-        |> Enum.map_join(" ", &capitalize/1)
-        |> case do
-          "F A Q" ->
-            "FAQ"
-
-          other ->
-            other
-        end
-
-      {String.to_atom(path),
-       [
-         title: title
-       ]}
-    end)
-  end
-
-  defp capitalize(string) do
-    string
-    |> String.split(" ")
-    |> Enum.map(fn string ->
-      [hd | tail] = String.graphemes(string)
-      String.capitalize(hd) <> Enum.join(tail)
-    end)
-  end
-
-  defp groups_for_extras() do
-    [
-      Tutorials: ~r'documentation/tutorials',
-      "How To": ~r'documentation/how_to',
-      Topics: ~r'documentation/topics',
-      DSLs: ~r'documentation/dsls'
-    ]
-  end
-
   defp docs do
     [
       main: "get-started-with-double-entry",
       source_ref: "v#{@version}",
       logo: "logos/small-logo.png",
-      extras: extras(),
       before_closing_head_tag: fn type ->
         if type == :html do
           """
@@ -127,29 +82,18 @@ defmodule AshDoubleEntry.MixProject do
           """
         end
       end,
-      spark: [
-        extensions: [
-          %{
-            module: AshDoubleEntry.Balance,
-            name: "AshDoubleEntry.Balance",
-            target: "Ash.Resource",
-            type: "Extension"
-          },
-          %{
-            module: AshDoubleEntry.Transfer,
-            name: "AshDoubleEntry.Transfer",
-            target: "Ash.Resource",
-            type: "Extension"
-          },
-          %{
-            module: AshDoubleEntry.Account,
-            name: "AshDoubleEntry.Account",
-            target: "Ash.Resource",
-            type: "Extension"
-          }
-        ]
+      extras: [
+        "documentation/tutorials/get-started-with-double-entry.md",
+        "documentation/dsls/DSL:-AshDoubleEntry.Account.md",
+        "documentation/dsls/DSL:-AshDoubleEntry.Balance.md",
+        "documentation/dsls/DSL:-AshDoubleEntry.Transfer.md"
       ],
-      groups_for_extras: groups_for_extras(),
+      groups_for_extras: [
+        Tutorials: ~r'documentation/tutorials',
+        "How To": ~r'documentation/how_to',
+        Topics: ~r'documentation/topics',
+        DSLs: ~r'documentation/dsls'
+      ],
       groups_for_modules: [
         Introspection: [
           AshDoubleEntry.Account.Info,
