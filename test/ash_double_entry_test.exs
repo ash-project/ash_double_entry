@@ -222,6 +222,48 @@ defmodule AshDoubleEntryTest do
              )
     end
 
+    test "adding transfer update the balances accordingly" do
+      now = DateTime.utc_now()
+
+      account_one =
+        Account
+        |> Ash.Changeset.for_create(:open, %{identifier: "account_one", currency: "USD"})
+        |> Api.create!()
+
+      account_two =
+        Account
+        |> Ash.Changeset.for_create(:open, %{identifier: "account_two", currency: "USD"})
+        |> Api.create!()
+
+      Transfer
+      |> Ash.Changeset.for_create(:transfer, %{
+        amount: Money.new!(:USD, 20),
+        from_account_id: account_one.id,
+        to_account_id: account_two.id,
+        timestamp: now
+      })
+      |> Api.create!()
+
+      Transfer
+      |> Ash.Changeset.for_create(:transfer, %{
+        amount: Money.new!(:USD, 20),
+        from_account_id: account_two.id,
+        to_account_id: account_one.id,
+        timestamp: DateTime.add(now, -2, :minute)
+      })
+      |> Api.create!()
+
+      assert Money.equal?(
+               Api.load!(account_one, :balance_as_of).balance_as_of,
+               Money.new!(:USD, 0)
+             )
+
+      assert Money.equal?(
+               Api.load!(account_two, :balance_as_of).balance_as_of,
+               Money.new!(:USD, 0)
+             )
+    end
+
     test "balances can be validated" do
       account_one =
         Account
