@@ -105,7 +105,7 @@ defmodule AshDoubleEntry.Transfer.Changes.VerifyTransfer do
         |> Ash.Query.filter(transfer_id > ^result.id)
         |> changeset.api.stream!(context_to_opts(context))
         |> Stream.map(fn balance ->
-          if changeset.action.type == :destroy && balance.account_id == from_account.id do
+          if balance.account_id == from_account.id do
             %{
               account_id: balance.account_id,
               transfer_id: balance.transfer_id,
