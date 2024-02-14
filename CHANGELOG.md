@@ -5,6 +5,17 @@ See [Conventional Commits](Https://conventionalcommits.org) for commit guideline
 
 <!-- changelog -->
 
+## [v0.2.4](https://github.com/ash-project/ash_double_entry/compare/v0.2.3...v0.2.4) (2024-02-14)
+
+
+
+
+### Bug Fixes:
+
+* properly update future balances from destroys
+
+* incorrect balance when adding transfer later (#12)
+
 ## [v0.2.3](https://github.com/ash-project/ash_double_entry/compare/v0.2.2...v0.2.3) (2023-12-23)
 
 
