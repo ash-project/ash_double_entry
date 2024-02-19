@@ -41,10 +41,17 @@ defmodule AshDoubleEntry.Transfer.Changes.VerifyTransfer do
       |> Ash.Changeset.after_action(fn changeset, result ->
         from_account_id = Ash.Changeset.get_attribute(changeset, :from_account_id)
         to_account_id = Ash.Changeset.get_attribute(changeset, :to_account_id)
-        amount = Ash.Changeset.get_attribute(changeset, :amount)
+        new_amount = Ash.Changeset.get_attribute(changeset, :amount)
+
+        old_amount =
+          if changeset.action.type == :destroy do
+            Money.new!(0, new_amount.currency)
+          else
+            changeset.data.amount || Money.new!(0, new_amount.currency)
+          end
 
         amount_delta =
-          Money.sub!(amount, changeset.data.amount || Money.new!(0, amount.currency))
+          Money.sub!(new_amount, old_amount)
 
         accounts =
           changeset.resource
