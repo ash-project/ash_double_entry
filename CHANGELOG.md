@@ -5,6 +5,17 @@ See [Conventional Commits](Https://conventionalcommits.org) for commit guideline
 
 <!-- changelog -->
 
+## [v1.0.0-rc.0](https://github.com/ash-project/ash_double_entry/compare/v0.2.4...v1.0.0-rc.0) (2024-04-01)
+### Breaking Changes:
+
+* update to Ash 3.0
+
+
+
+### Bug Fixes:
+
+* correct amount_delta calculation from destorying (#13)
+
 ## [v0.2.4](https://github.com/ash-project/ash_double_entry/compare/v0.2.3...v0.2.4) (2024-02-14)
 
 
