@@ -10,28 +10,28 @@ defmodule AshDoubleEntry.Transfer.Transformers.AddStructure do
 
   def transform(dsl) do
     dsl
-    |> Ash.Resource.Builder.add_attribute(:id, AshDoubleEntry.ULID,
+    |> Ash.Resource.Builder.add_new_attribute(:id, AshDoubleEntry.ULID,
       primary_key?: true,
       allow_nil?: false,
       default: &AshDoubleEntry.ULID.generate/0,
       generated?: false
     )
-    |> Ash.Resource.Builder.add_attribute(:amount, AshMoney.Types.Money, allow_nil?: false)
-    |> Ash.Resource.Builder.add_attribute(:timestamp, :utc_datetime_usec,
+    |> Ash.Resource.Builder.add_new_attribute(:amount, AshMoney.Types.Money, allow_nil?: false)
+    |> Ash.Resource.Builder.add_new_attribute(:timestamp, :utc_datetime_usec,
       allow_nil?: false,
       default: &DateTime.utc_now/0
     )
-    |> Ash.Resource.Builder.add_attribute(:inserted_at, :utc_datetime_usec,
+    |> Ash.Resource.Builder.add_new_attribute(:inserted_at, :utc_datetime_usec,
       allow_nil?: false,
       default: &DateTime.utc_now/0
     )
-    |> Ash.Resource.Builder.add_relationship(
+    |> Ash.Resource.Builder.add_new_relationship(
       :belongs_to,
       :from_account,
       AshDoubleEntry.Transfer.Info.transfer_account_resource!(dsl),
       attribute_writable?: true
     )
-    |> Ash.Resource.Builder.add_relationship(
+    |> Ash.Resource.Builder.add_new_relationship(
       :belongs_to,
       :to_account,
       AshDoubleEntry.Transfer.Info.transfer_account_resource!(dsl),

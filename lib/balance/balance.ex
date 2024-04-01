@@ -7,8 +7,8 @@ defmodule AshDoubleEntry.Balance do
     name: :balance,
     schema: [
       pre_check_identities_with: [
-        type: {:spark, Ash.Api},
-        doc: "An api to use to precheck generated identities. Required by certain data layers."
+        type: {:spark, Ash.Domain},
+        doc: "A domain to use to precheck generated identities. Required by certain data layers."
       ],
       transfer_resource: [
         type: {:spark, Ash.Resource},

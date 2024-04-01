@@ -7,8 +7,8 @@ defmodule AshDoubleEntry.Transfer do
     name: :transfer,
     schema: [
       pre_check_identities_with: [
-        type: {:spark, Ash.Api},
-        doc: "An api to use to precheck generated identities. Required by certain data layers."
+        type: {:spark, Ash.Domain},
+        doc: "A domain to use to precheck generated identities. Required by certain data layers."
       ],
       account_resource: [
         type: Ash.OptionsHelpers.ash_resource(),

@@ -11,15 +11,15 @@ defmodule AshDoubleEntry.Account.Transformers.AddStructure do
   def transform(dsl) do
     dsl
     |> add_primary_read_action()
-    |> Ash.Resource.Builder.add_attribute(:id, :uuid,
+    |> Ash.Resource.Builder.add_new_attribute(:id, :uuid,
       primary_key?: true,
       writable?: false,
       generated?: true,
       allow_nil?: false,
       default: &Ash.UUID.generate/0
     )
-    |> Ash.Resource.Builder.add_attribute(:identifier, :string, allow_nil?: false)
-    |> Ash.Resource.Builder.add_attribute(
+    |> Ash.Resource.Builder.add_new_attribute(:identifier, :string, allow_nil?: false)
+    |> Ash.Resource.Builder.add_new_attribute(
       :currency,
       :string,
       allow_nil?: false
@@ -37,11 +37,11 @@ defmodule AshDoubleEntry.Account.Transformers.AddStructure do
         )
       ]
     )
-    |> Ash.Resource.Builder.add_attribute(:inserted_at, :utc_datetime_usec,
+    |> Ash.Resource.Builder.add_new_attribute(:inserted_at, :utc_datetime_usec,
       allow_nil?: false,
       default: &DateTime.utc_now/0
     )
-    |> Ash.Resource.Builder.add_relationship(
+    |> Ash.Resource.Builder.add_new_relationship(
       :has_many,
       :balances,
       AshDoubleEntry.Account.Info.account_balance_resource!(dsl),
@@ -61,7 +61,6 @@ defmodule AshDoubleEntry.Account.Transformers.AddStructure do
       AshMoney.Types.Money,
       {AshDoubleEntry.Account.Calculations.BalanceAsOfUlid,
        [resource: Spark.Dsl.Transformer.get_persisted(dsl, :module)]},
-      private?: true,
       arguments: [
         Ash.Resource.Builder.build_calculation_argument(
           :ulid,
@@ -80,7 +79,6 @@ defmodule AshDoubleEntry.Account.Transformers.AddStructure do
       AshMoney.Types.Money,
       {AshDoubleEntry.Account.Calculations.BalanceAsOf,
        [resource: Spark.Dsl.Transformer.get_persisted(dsl, :module)]},
-      private?: true,
       arguments: [
         Ash.Resource.Builder.build_calculation_argument(
           :timestamp,

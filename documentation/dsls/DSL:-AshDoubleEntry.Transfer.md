@@ -19,7 +19,7 @@ An extension for creating a double entry ledger transfer. See the getting starte
 | Name | Type | Default | Docs |
 |------|------|---------|------|
 | [`account_resource`](#transfer-account_resource){: #transfer-account_resource .spark-required} | `module` |  | The resource to use for account balances |
-| [`pre_check_identities_with`](#transfer-pre_check_identities_with){: #transfer-pre_check_identities_with } | `module` |  | An api to use to precheck generated identities. Required by certain data layers. |
+| [`pre_check_identities_with`](#transfer-pre_check_identities_with){: #transfer-pre_check_identities_with } | `module` |  | A domain to use to precheck generated identities. Required by certain data layers. |
 | [`balance_resource`](#transfer-balance_resource){: #transfer-balance_resource } | `module` |  | The resource being used for balances |
 
 

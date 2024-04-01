@@ -5,11 +5,12 @@ defmodule AshDoubleEntryTest do
 
   defmodule Account do
     use Ash.Resource,
+      domain: AshDoubleEntryTest.Domain,
       data_layer: Ash.DataLayer.Mnesia,
       extensions: [AshDoubleEntry.Account]
 
     account do
-      pre_check_identities_with AshDoubleEntryTest.Api
+      pre_check_identities_with AshDoubleEntryTest.Domain
       transfer_resource AshDoubleEntryTest.Transfer
       balance_resource AshDoubleEntryTest.Balance
       open_action_accept [:allow_zero_balance]
@@ -24,6 +25,7 @@ defmodule AshDoubleEntryTest do
 
   defmodule Transfer do
     use Ash.Resource,
+      domain: AshDoubleEntryTest.Domain,
       data_layer: Ash.DataLayer.Mnesia,
       extensions: [AshDoubleEntry.Transfer]
 
@@ -33,17 +35,18 @@ defmodule AshDoubleEntryTest do
     end
 
     actions do
-      defaults [:destroy, :update]
+      defaults [:destroy, update: [:amount]]
     end
   end
 
   defmodule Balance do
     use Ash.Resource,
+      domain: AshDoubleEntryTest.Domain,
       data_layer: Ash.DataLayer.Mnesia,
       extensions: [AshDoubleEntry.Balance]
 
     balance do
-      pre_check_identities_with AshDoubleEntryTest.Api
+      pre_check_identities_with AshDoubleEntryTest.Domain
       transfer_resource Transfer
       account_resource Account
     end
@@ -53,11 +56,11 @@ defmodule AshDoubleEntryTest do
     end
 
     changes do
-      change after_action(&validate_balance/2)
+      change after_action(&validate_balance/3)
     end
 
-    defp validate_balance(changeset, result) do
-      account = result |> changeset.api.load!(:account) |> Map.get(:account)
+    defp validate_balance(_changeset, result, _context) do
+      account = result |> Ash.load!(:account) |> Map.get(:account)
 
       if account.allow_zero_balance == false &&
            Money.negative?(result.balance) do
@@ -73,8 +76,8 @@ defmodule AshDoubleEntryTest do
     end
   end
 
-  defmodule Api do
-    use Ash.Api
+  defmodule Domain do
+    use Ash.Domain
 
     resources do
       resource Account
@@ -84,7 +87,7 @@ defmodule AshDoubleEntryTest do
   end
 
   setup do
-    Ash.DataLayer.Mnesia.start(Api)
+    Ash.DataLayer.Mnesia.start(Domain)
 
     on_exit(fn ->
       capture_log(fn ->
@@ -99,19 +102,19 @@ defmodule AshDoubleEntryTest do
       assert %{identifier: "account_one"} =
                Account
                |> Ash.Changeset.for_create(:open, %{identifier: "account_one", currency: "USD"})
-               |> Api.create!()
+               |> Ash.create!()
     end
 
     test "you cannot open duplicate accounts" do
       assert %{identifier: "account_one"} =
                Account
                |> Ash.Changeset.for_create(:open, %{identifier: "account_one", currency: "USD"})
-               |> Api.create!()
+               |> Ash.create!()
 
       assert_raise Ash.Error.Invalid, ~r/identifier: has already been taken/, fn ->
         Account
         |> Ash.Changeset.for_create(:open, %{identifier: "account_one", currency: "USD"})
-        |> Api.create!()
+        |> Ash.create!()
       end
     end
   end
@@ -121,8 +124,8 @@ defmodule AshDoubleEntryTest do
       account_balance =
         Account
         |> Ash.Changeset.for_create(:open, %{identifier: "account_one", currency: "USD"})
-        |> Api.create!()
-        |> Api.load!(:balance_as_of)
+        |> Ash.create!()
+        |> Ash.load!(:balance_as_of)
         |> Map.get(:balance_as_of)
 
       assert Money.equal?(account_balance, Money.new!(:USD, 0))
@@ -132,12 +135,12 @@ defmodule AshDoubleEntryTest do
       account_one =
         Account
         |> Ash.Changeset.for_create(:open, %{identifier: "account_one", currency: "USD"})
-        |> Api.create!()
+        |> Ash.create!()
 
       account_two =
         Account
         |> Ash.Changeset.for_create(:open, %{identifier: "account_two", currency: "USD"})
-        |> Api.create!()
+        |> Ash.create!()
 
       Transfer
       |> Ash.Changeset.for_create(:transfer, %{
@@ -145,15 +148,15 @@ defmodule AshDoubleEntryTest do
         from_account_id: account_one.id,
         to_account_id: account_two.id
       })
-      |> Api.create!()
+      |> Ash.create!()
 
       assert Money.equal?(
-               Api.load!(account_one, :balance_as_of).balance_as_of,
+               Ash.load!(account_one, :balance_as_of).balance_as_of,
                Money.new!(:USD, -20)
              )
 
       assert Money.equal?(
-               Api.load!(account_two, :balance_as_of).balance_as_of,
+               Ash.load!(account_two, :balance_as_of).balance_as_of,
                Money.new!(:USD, 20)
              )
     end
@@ -162,12 +165,12 @@ defmodule AshDoubleEntryTest do
       account_one =
         Account
         |> Ash.Changeset.for_create(:open, %{identifier: "account_one", currency: "USD"})
-        |> Api.create!()
+        |> Ash.create!()
 
       account_two =
         Account
         |> Ash.Changeset.for_create(:open, %{identifier: "account_two", currency: "USD"})
-        |> Api.create!()
+        |> Ash.create!()
 
       Transfer
       |> Ash.Changeset.for_create(:transfer, %{
@@ -175,17 +178,17 @@ defmodule AshDoubleEntryTest do
         from_account_id: account_one.id,
         to_account_id: account_two.id
       })
-      |> Api.create!()
+      |> Ash.create!()
       |> Ash.Changeset.for_destroy(:destroy)
-      |> Api.destroy!()
+      |> Ash.destroy!()
 
       assert Money.equal?(
-               Api.load!(account_one, :balance_as_of).balance_as_of,
+               Ash.load!(account_one, :balance_as_of).balance_as_of,
                Money.new!(:USD, 0)
              )
 
       assert Money.equal?(
-               Api.load!(account_two, :balance_as_of).balance_as_of,
+               Ash.load!(account_two, :balance_as_of).balance_as_of,
                Money.new!(:USD, 0)
              )
     end
@@ -194,12 +197,12 @@ defmodule AshDoubleEntryTest do
       account_one =
         Account
         |> Ash.Changeset.for_create(:open, %{identifier: "account_one", currency: "USD"})
-        |> Api.create!()
+        |> Ash.create!()
 
       account_two =
         Account
         |> Ash.Changeset.for_create(:open, %{identifier: "account_two", currency: "USD"})
-        |> Api.create!()
+        |> Ash.create!()
 
       Transfer
       |> Ash.Changeset.for_create(:transfer, %{
@@ -207,17 +210,17 @@ defmodule AshDoubleEntryTest do
         from_account_id: account_one.id,
         to_account_id: account_two.id
       })
-      |> Api.create!()
+      |> Ash.create!()
       |> Ash.Changeset.for_update(:update, %{amount: Money.new!(:USD, 10)})
-      |> Api.update!()
+      |> Ash.update!()
 
       assert Money.equal?(
-               Api.load!(account_one, :balance_as_of).balance_as_of,
+               Ash.load!(account_one, :balance_as_of).balance_as_of,
                Money.new!(:USD, -10)
              )
 
       assert Money.equal?(
-               Api.load!(account_two, :balance_as_of).balance_as_of,
+               Ash.load!(account_two, :balance_as_of).balance_as_of,
                Money.new!(:USD, 10)
              )
     end
@@ -228,12 +231,12 @@ defmodule AshDoubleEntryTest do
       account_one =
         Account
         |> Ash.Changeset.for_create(:open, %{identifier: "account_one", currency: "USD"})
-        |> Api.create!()
+        |> Ash.create!()
 
       account_two =
         Account
         |> Ash.Changeset.for_create(:open, %{identifier: "account_two", currency: "USD"})
-        |> Api.create!()
+        |> Ash.create!()
 
       Transfer
       |> Ash.Changeset.for_create(:transfer, %{
@@ -242,7 +245,7 @@ defmodule AshDoubleEntryTest do
         to_account_id: account_two.id,
         timestamp: now
       })
-      |> Api.create!()
+      |> Ash.create!()
 
       Transfer
       |> Ash.Changeset.for_create(:transfer, %{
@@ -251,15 +254,15 @@ defmodule AshDoubleEntryTest do
         to_account_id: account_one.id,
         timestamp: DateTime.add(now, -2, :minute)
       })
-      |> Api.create!()
+      |> Ash.create!()
 
       assert Money.equal?(
-               Api.load!(account_one, :balance_as_of).balance_as_of,
+               Ash.load!(account_one, :balance_as_of).balance_as_of,
                Money.new!(:USD, 0)
              )
 
       assert Money.equal?(
-               Api.load!(account_two, :balance_as_of).balance_as_of,
+               Ash.load!(account_two, :balance_as_of).balance_as_of,
                Money.new!(:USD, 0)
              )
     end
@@ -270,12 +273,12 @@ defmodule AshDoubleEntryTest do
       account_one =
         Account
         |> Ash.Changeset.for_create(:open, %{identifier: "account_one", currency: "USD"})
-        |> Api.create!()
+        |> Ash.create!()
 
       account_two =
         Account
         |> Ash.Changeset.for_create(:open, %{identifier: "account_two", currency: "USD"})
-        |> Api.create!()
+        |> Ash.create!()
 
       transfer_1 =
         Transfer
@@ -285,7 +288,7 @@ defmodule AshDoubleEntryTest do
           to_account_id: account_two.id,
           timestamp: now
         })
-        |> Api.create!()
+        |> Ash.create!()
 
       transfer_2 =
         Transfer
@@ -295,39 +298,39 @@ defmodule AshDoubleEntryTest do
           to_account_id: account_one.id,
           timestamp: DateTime.add(now, -2, :minute)
         })
-        |> Api.create!()
+        |> Ash.create!()
 
       assert Money.equal?(
-               Api.load!(account_one, :balance_as_of).balance_as_of,
+               Ash.load!(account_one, :balance_as_of).balance_as_of,
                Money.new!(:USD, 0)
              )
 
       assert Money.equal?(
-               Api.load!(account_two, :balance_as_of).balance_as_of,
+               Ash.load!(account_two, :balance_as_of).balance_as_of,
                Money.new!(:USD, 0)
              )
 
-      transfer_2 |> Api.destroy!()
+      transfer_2 |> Ash.destroy!()
 
       assert Money.equal?(
-               Api.load!(account_one, :balance_as_of).balance_as_of,
+               Ash.load!(account_one, :balance_as_of).balance_as_of,
                Money.new!(:USD, -20)
              )
 
       assert Money.equal?(
-               Api.load!(account_two, :balance_as_of).balance_as_of,
+               Ash.load!(account_two, :balance_as_of).balance_as_of,
                Money.new!(:USD, 20)
              )
 
-      transfer_1 |> Api.destroy!()
+      transfer_1 |> Ash.destroy!()
 
       assert Money.equal?(
-               Api.load!(account_one, :balance_as_of).balance_as_of,
+               Ash.load!(account_one, :balance_as_of).balance_as_of,
                Money.new!(:USD, 0)
              )
 
       assert Money.equal?(
-               Api.load!(account_two, :balance_as_of).balance_as_of,
+               Ash.load!(account_two, :balance_as_of).balance_as_of,
                Money.new!(:USD, 0)
              )
     end
@@ -340,12 +343,12 @@ defmodule AshDoubleEntryTest do
           currency: "USD",
           allow_zero_balance: false
         })
-        |> Api.create!()
+        |> Ash.create!()
 
       account_two =
         Account
         |> Ash.Changeset.for_create(:open, %{identifier: "account_two", currency: "USD"})
-        |> Api.create!()
+        |> Ash.create!()
 
       assert_raise Ash.Error.Invalid, ~r/balance cannot be negative/, fn ->
         Transfer
@@ -354,7 +357,7 @@ defmodule AshDoubleEntryTest do
           from_account_id: account_one.id,
           to_account_id: account_two.id
         })
-        |> Api.create!()
+        |> Ash.create!()
       end
     end
 
@@ -367,7 +370,7 @@ defmodule AshDoubleEntryTest do
           identifier: "account_one",
           currency: "USD"
         })
-        |> Api.create!()
+        |> Ash.create!()
 
       account_two =
         Account
@@ -376,7 +379,7 @@ defmodule AshDoubleEntryTest do
           currency: "USD",
           allow_zero_balance: false
         })
-        |> Api.create!()
+        |> Ash.create!()
 
       account_three =
         Account
@@ -385,17 +388,16 @@ defmodule AshDoubleEntryTest do
           currency: "USD",
           allow_zero_balance: false
         })
-        |> Api.create!()
+        |> Ash.create!()
 
       account_four =
         Account
         |> Ash.Changeset.for_create(:open, %{
           identifier: "account_four",
           currency: "USD",
-          allow_zero_balance: false,
-          timestamp: now
+          allow_zero_balance: false
         })
-        |> Api.create!()
+        |> Ash.create!()
 
       Transfer
       |> Ash.Changeset.for_create(:transfer, %{
@@ -404,7 +406,7 @@ defmodule AshDoubleEntryTest do
         to_account_id: account_two.id,
         timestamp: DateTime.add(now, 2, :minute)
       })
-      |> Api.create!()
+      |> Ash.create!()
 
       Transfer
       |> Ash.Changeset.for_create(:transfer, %{
@@ -413,7 +415,7 @@ defmodule AshDoubleEntryTest do
         to_account_id: account_three.id,
         timestamp: DateTime.add(now, 3, :minute)
       })
-      |> Api.create!()
+      |> Ash.create!()
 
       assert_raise Ash.Error.Invalid, ~r/balance cannot be negative/, fn ->
         Transfer
@@ -423,7 +425,7 @@ defmodule AshDoubleEntryTest do
           to_account_id: account_four.id,
           timestamp: DateTime.add(now, 1, :minute)
         })
-        |> Api.create!()
+        |> Ash.create!()
       end
     end
   end

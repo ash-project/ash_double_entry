@@ -21,7 +21,7 @@ An extension for creating a double entry ledger account. See the getting started
 | [`transfer_resource`](#account-transfer_resource){: #account-transfer_resource .spark-required} | `module` |  | The resource used for transfers |
 | [`balance_resource`](#account-balance_resource){: #account-balance_resource .spark-required} | `module` |  | The resource used for balances |
 | [`open_action_accept`](#account-open_action_accept){: #account-open_action_accept } | `list(atom)` | `[]` | A list of extra attributes to be accepted by the open action. The `identifier` and `currency` attributes are always accepted. |
-| [`pre_check_identities_with`](#account-pre_check_identities_with){: #account-pre_check_identities_with } | `module` |  | An api to use to precheck generated identities. Required by certain data layers. |
+| [`pre_check_identities_with`](#account-pre_check_identities_with){: #account-pre_check_identities_with } | `module` |  | A domain to use to precheck generated identities. Required by certain data layers. |
 
 
 

@@ -17,20 +17,20 @@ defmodule AshDoubleEntry.Balance.Transformers.AddStructure do
       end
 
     dsl
-    |> Ash.Resource.Builder.add_attribute(:id, :uuid,
+    |> Ash.Resource.Builder.add_new_attribute(:id, :uuid,
       primary_key?: true,
       writable?: false,
       generated?: true,
       allow_nil?: false,
       default: &Ash.UUID.generate/0
     )
-    |> Ash.Resource.Builder.add_attribute(:balance, AshMoney.Types.Money,
+    |> Ash.Resource.Builder.add_new_attribute(:balance, AshMoney.Types.Money,
       allow_nil?: false,
       constraints: [
         storage_type: storage_type
       ]
     )
-    |> Ash.Resource.Builder.add_relationship(
+    |> Ash.Resource.Builder.add_new_relationship(
       :belongs_to,
       :transfer,
       AshDoubleEntry.Balance.Info.balance_transfer_resource!(dsl),
@@ -38,7 +38,7 @@ defmodule AshDoubleEntry.Balance.Transformers.AddStructure do
       allow_nil?: false,
       attribute_writable?: true
     )
-    |> Ash.Resource.Builder.add_relationship(
+    |> Ash.Resource.Builder.add_new_relationship(
       :belongs_to,
       :account,
       AshDoubleEntry.Balance.Info.balance_account_resource!(dsl),

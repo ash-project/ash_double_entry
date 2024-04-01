@@ -57,9 +57,13 @@ defmodule AshDoubleEntry.Transfer.Changes.VerifyTransfer do
           changeset.resource
           |> AshDoubleEntry.Transfer.Info.transfer_account_resource!()
           |> Ash.Query.filter(id in ^[from_account_id, to_account_id])
-          |> Ash.Query.for_read(:lock_accounts, context_to_opts(context, authorize?: false))
+          |> Ash.Query.for_read(
+            :lock_accounts,
+            %{},
+            Ash.Context.to_opts(context, authorize?: false, domain: changeset.domain)
+          )
           |> Ash.Query.load(balance_as_of_ulid: %{ulid: result.id})
-          |> changeset.api.read!(context_to_opts(context, authorize?: false))
+          |> Ash.read!()
 
         from_account = Enum.find(accounts, &(&1.id == from_account_id))
         to_account = Enum.find(accounts, &(&1.id == to_account_id))
@@ -87,9 +91,12 @@ defmodule AshDoubleEntry.Transfer.Changes.VerifyTransfer do
               balance: new_from_account_balance,
               account: from_account
             },
-            context_to_opts(context)
+            Ash.Context.to_opts(context,
+              domain: changeset.domain,
+              skip_unknown_inputs: [:account_id, :transfer_id, :balance, :account]
+            )
           )
-          |> changeset.api.create!()
+          |> Ash.create!()
 
           changeset.resource
           |> AshDoubleEntry.Transfer.Info.transfer_balance_resource!()
@@ -100,9 +107,12 @@ defmodule AshDoubleEntry.Transfer.Changes.VerifyTransfer do
               transfer_id: result.id,
               balance: new_to_account_balance
             },
-            context_to_opts(context)
+            Ash.Context.to_opts(context,
+              domain: changeset.domain,
+              skip_unknown_inputs: [:account_id, :transfer_id, :balance]
+            )
           )
-          |> changeset.api.create!()
+          |> Ash.create!()
         end
 
         # Turn this into a bulk update when we support it in Ash core
@@ -110,7 +120,7 @@ defmodule AshDoubleEntry.Transfer.Changes.VerifyTransfer do
         |> AshDoubleEntry.Transfer.Info.transfer_balance_resource!()
         |> Ash.Query.filter(account_id in ^[from_account.id, to_account.id])
         |> Ash.Query.filter(transfer_id > ^result.id)
-        |> changeset.api.stream!(context_to_opts(context))
+        |> Ash.stream!(Ash.Context.to_opts(context, domain: changeset.domain))
         |> Stream.map(fn balance ->
           amount_delta =
             if changeset.action.type == :destroy do
@@ -133,10 +143,11 @@ defmodule AshDoubleEntry.Transfer.Changes.VerifyTransfer do
             }
           end
         end)
-        |> changeset.api.bulk_create!(
+        |> Ash.bulk_create!(
           AshDoubleEntry.Transfer.Info.transfer_balance_resource!(changeset.resource),
           :upsert_balance,
-          context_to_opts(context,
+          Ash.Context.to_opts(context,
+            domain: changeset.domain,
             return_errors?: true,
             stop_on_error?: true,
             upsert_fields: [:balance]
@@ -163,14 +174,15 @@ defmodule AshDoubleEntry.Transfer.Changes.VerifyTransfer do
       Ash.Changeset.before_action(changeset, fn changeset ->
         balance_resource
         |> Ash.Query.filter(transfer_id == ^changeset.data.id)
-        |> changeset.api.stream!(context_to_opts(context, authorize?: false))
+        |> Ash.stream!(Ash.Context.to_opts(context, authorize?: false, domain: changeset.domain))
         |> Enum.each(fn balance ->
           balance
           |> Ash.Changeset.for_destroy(
             destroy_action,
-            context_to_opts(context, authorize?: false)
+            %{},
+            Ash.Context.to_opts(context, authorize?: false, domain: changeset.domain)
           )
-          |> changeset.api.destroy!()
+          |> Ash.destroy!()
         end)
 
         changeset
@@ -178,12 +190,5 @@ defmodule AshDoubleEntry.Transfer.Changes.VerifyTransfer do
     else
       changeset
     end
-  end
-
-  defp context_to_opts(context, opts \\ []) do
-    context
-    |> Map.take([:tenant, :actor, :tracer])
-    |> Map.to_list()
-    |> Keyword.merge(opts)
   end
 end

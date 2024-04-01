@@ -1,15 +1,12 @@
 defmodule AshDoubleEntry.Account.Calculations.BalanceAsOf do
   # Calculates the balance as of a given datetime. See the getting started guide for more.
   @moduledoc false
-  use Ash.Calculation
+  use Ash.Resource.Calculation
   require Ash.Expr
 
-  def expression(opts, context) do
+  def expression(_opts, context) do
     Ash.Expr.expr(
-      balance_as_of_ulid(
-        ulid: Ash.Expr.expr(lazy({__MODULE__, :ulid, [context.timestamp]})),
-        resource: opts[:resource]
-      )
+      balance_as_of_ulid(ulid: lazy({__MODULE__, :ulid, [context.arguments.timestamp]}))
     )
   end
 

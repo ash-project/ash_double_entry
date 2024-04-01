@@ -21,6 +21,7 @@ Follow the setup guide for `AshMoney`. If you are using with `AshPostgres`, be s
 ```elixir
 defmodule YourApp.Ledger.Account do
   use Ash.Resource,
+    domain: YourApp.Ledger,
     data_layer: AshPostgres.DataLayer,
     extensions: [AshDoubleEntry.Account]
 
@@ -60,8 +61,8 @@ end
 - Adds a `has_many` relationship called `balances`, referring to all related balances of an account
 - Adds an aggregate called `balance`, referring to the latest balance as a `decimal` for that account
 - Adds the following calculations:
- - A `balance_as_of_ulid` calculation that takes an argument called `ulid`, which corresponds to a transfer id and returns the balance.
- - A `balance_as_of` calculation that takes a `utc_datetime_usec` and returns the balance as of that datetime.
+- A `balance_as_of_ulid` calculation that takes an argument called `ulid`, which corresponds to a transfer id and returns the balance.
+- A `balance_as_of` calculation that takes a `utc_datetime_usec` and returns the balance as of that datetime.
 - Adds an identity called `unique_identifier` that ensures `identifier` is unique.
 
 ### Define your transfer resource
@@ -71,6 +72,7 @@ end
 ```elixir
 defmodule YourApp.Ledger.Transfer do
   use Ash.Resource,
+    domain: YourApp.Ledger,
     data_layer: AshPostgres.DataLayer,
     extensions: [AshDoubleEntry.Transfer]
 
@@ -107,6 +109,7 @@ end
 ```elixir
 defmodule YourApp.Ledger.Balance do
   use Ash.Resource,
+    domain: YourApp.Ledger,
     data_layer: AshPostgres.DataLayer,
     extensions: [AshDoubleEntry.Balance]
 
@@ -135,7 +138,7 @@ defmodule YourApp.Ledger.Balance do
   end
 
   defp validate_balance(changeset, result) do
-    account = result |> changeset.api.load!(:account) |> Map.get(:account)
+    account = result |> Ash.load!(:account) |> Map.get(:account)
 
     if account.allow_zero_balance == false && Money.negative?(result.balance) do
 
@@ -162,17 +165,16 @@ end
   - `:account` a `:belongs_to` relationship, pointing to the account the balance is for
 - Adds the following actions:
   - a primary read action called `:read`, if a priamry read action doesn't
-  exist
+    exist
   - configure primary read action to have keyset pagination enabled
   - a create action caleld `:upsert_balance`, which will create or update the relevant balance, by `transfer_id` and `account_id`
 - Adds an identity that ensures that `account_id` and `transfer_id` are unique
 
-
-### Define an Ash api to use them through
+### Define an Ash domain to use them through
 
 ```elixir
 defmodule YourApp.Ledger do
-  use Ash.Api
+  use Ash.Domain
 
   resources do
     resource YourApp.Ledger.Account
@@ -182,9 +184,9 @@ defmodule YourApp.Ledger do
 end
 ```
 
-And add the API to your config
+And add the domain to your config
 
-`config :your_app, ash_apis: [..., YourApp.Ledger]`
+`config :your_app, ash_domains: [..., YourApp.Ledger]`
 
 ### Generate Migrations
 

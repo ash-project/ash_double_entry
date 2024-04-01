@@ -1,7 +1,7 @@
 defmodule AshDoubleEntry.Account.Calculations.BalanceAsOfUlid do
   # Calculates the balance as of a given transfer id. See the getting started guide for more.
   @moduledoc false
-  use Ash.Calculation
+  use Ash.Resource.Calculation
   require Ash.Expr
 
   def expression(opts, context) do
@@ -13,14 +13,14 @@ defmodule AshDoubleEntry.Account.Calculations.BalanceAsOfUlid do
       Ash.Expr.expr(
         first(balances,
           field: :balance,
-          query: [sort: [transfer_id: :desc], filter: [transfer_id: [lte: context[:ulid]]]]
+          query: [sort: [transfer_id: :desc], filter: transfer_id <= ^context.arguments[:ulid]]
         ) || composite_type(%{currency: currency, amount: 0}, AshMoney.Types.Money)
       )
     else
       Ash.Expr.expr(
         first(balances,
           field: :balance,
-          query: [sort: [transfer_id: :desc], filter: [transfer_id: [lte: context[:ulid]]]]
+          query: [sort: [transfer_id: :desc], filter: transfer_id <= ^context.arguments[:ulid]]
         ) || %{currency: currency, amount: 0}
       )
     end
