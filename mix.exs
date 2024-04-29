@@ -117,7 +117,7 @@ defmodule AshDoubleEntry.MixProject do
   defp deps do
     [
       {:ash, ash_version("~> 3.0.0-rc")},
-      {:ash_money, path: "../ash_money"},
+      {:ash_money, "~> 0.1.6-rc"},
       {:ex_money_sql, "~> 1.10"},
       # dev/test dependencies
       {:git_ops, "~> 2.5", only: [:dev, :test]},
