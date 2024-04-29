@@ -5,6 +5,15 @@ See [Conventional Commits](Https://conventionalcommits.org) for commit guideline
 
 <!-- changelog -->
 
+## [v1.0.0-rc.1](https://github.com/ash-project/ash_double_entry/compare/v1.0.0-rc.0...v1.0.0-rc.1) (2024-04-29)
+
+
+
+
+### Improvements:
+
+* update to support new atomics & bulk actions
+
 ## [v1.0.0-rc.0](https://github.com/ash-project/ash_double_entry/compare/v0.2.4...v1.0.0-rc.0) (2024-04-01)
 ### Breaking Changes:
 
