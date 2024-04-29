@@ -24,6 +24,11 @@ defmodule AshDoubleEntry.Balance do
         type: :boolean,
         doc: "Whether the balance is stored as a composite type.",
         default: true
+      ],
+      data_layer_can_add_money?: [
+        type: :boolean,
+        doc: "Whether or not the data layer supports adding money.",
+        default: true
       ]
     ]
   }

@@ -1,13 +1,46 @@
 defmodule AshDoubleEntryTest do
   use ExUnit.Case
-  import ExUnit.CaptureLog
   require Ash.Query
+
+  defmodule RequiresPositiveBalance do
+    use Ash.Resource.Validation
+
+    def validate(changeset, _, _) do
+      account_id = Ash.Changeset.get_attribute(changeset, :account_id)
+
+      if is_nil(account_id) do
+        :ok
+      else
+        account = Ash.get!(AshDoubleEntryTest.Account, account_id, authorize?: false)
+
+        if account.allow_zero_balance do
+          {:error, "Account must require positive balance"}
+        else
+          :ok
+        end
+      end
+    end
+
+    def atomic(_changeset, _, _) do
+      {:atomic, [:account], expr(account.allow_zero_balance == false),
+       expr(
+         error(Ash.Error.Changes.InvalidRelationship,
+           relationship: :account,
+           message: "Account must require positive balance"
+         )
+       )}
+    end
+  end
 
   defmodule Account do
     use Ash.Resource,
       domain: AshDoubleEntryTest.Domain,
-      data_layer: Ash.DataLayer.Mnesia,
+      data_layer: Ash.DataLayer.Ets,
       extensions: [AshDoubleEntry.Account]
+
+    ets do
+      private? true
+    end
 
     account do
       pre_check_identities_with AshDoubleEntryTest.Domain
@@ -26,8 +59,12 @@ defmodule AshDoubleEntryTest do
   defmodule Transfer do
     use Ash.Resource,
       domain: AshDoubleEntryTest.Domain,
-      data_layer: Ash.DataLayer.Mnesia,
+      data_layer: Ash.DataLayer.Ets,
       extensions: [AshDoubleEntry.Transfer]
+
+    ets do
+      private? true
+    end
 
     transfer do
       account_resource Account
@@ -42,8 +79,12 @@ defmodule AshDoubleEntryTest do
   defmodule Balance do
     use Ash.Resource,
       domain: AshDoubleEntryTest.Domain,
-      data_layer: Ash.DataLayer.Mnesia,
+      data_layer: Ash.DataLayer.Ets,
       extensions: [AshDoubleEntry.Balance]
+
+    ets do
+      private? true
+    end
 
     balance do
       pre_check_identities_with AshDoubleEntryTest.Domain
@@ -55,24 +96,10 @@ defmodule AshDoubleEntryTest do
       defaults [:destroy]
     end
 
-    changes do
-      change after_action(&validate_balance/3)
-    end
-
-    defp validate_balance(_changeset, result, _context) do
-      account = result |> Ash.load!(:account) |> Map.get(:account)
-
-      if account.allow_zero_balance == false &&
-           Money.negative?(result.balance) do
-        {:error,
-         Ash.Error.Changes.InvalidAttribute.exception(
-           value: result.balance,
-           field: :balance,
-           message: "balance cannot be negative"
-         )}
-      else
-        {:ok, result}
-      end
+    validations do
+      validate compare(:balance, greater_than_or_equal_to: 0),
+        where: [RequiresPositiveBalance],
+        message: "balance cannot be negative"
     end
   end
 
@@ -84,17 +111,6 @@ defmodule AshDoubleEntryTest do
       resource Transfer
       resource Balance
     end
-  end
-
-  setup do
-    Ash.DataLayer.Mnesia.start(Domain)
-
-    on_exit(fn ->
-      capture_log(fn ->
-        :mnesia.stop()
-        :mnesia.delete_schema([node()])
-      end)
-    end)
   end
 
   describe "opening accounts" do

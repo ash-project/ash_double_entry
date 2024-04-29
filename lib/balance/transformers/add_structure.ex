@@ -3,6 +3,7 @@ defmodule AshDoubleEntry.Balance.Transformers.AddStructure do
   @moduledoc false
   use Spark.Dsl.Transformer
   import Spark.Dsl.Builder
+  import Ash.Expr
 
   def before?(Ash.Resource.Transformers.CachePrimaryKey), do: true
   def before?(Ash.Resource.Transformers.BelongsToAttribute), do: true
@@ -50,6 +51,32 @@ defmodule AshDoubleEntry.Balance.Transformers.AddStructure do
       accept: [:balance, :account_id, :transfer_id],
       upsert?: true,
       upsert_identity: :unique_references
+    )
+    |> Ash.Resource.Builder.add_action(:update, :adjust_balance,
+      changes: [
+        Ash.Resource.Builder.build_action_change(
+          {Ash.Resource.Change.Filter,
+           filter:
+             expr(
+               account_id in [^arg(:from_account_id), ^arg(:to_account_id)] and
+                 transfer_id > ^arg(:transfer_id)
+             )}
+        ),
+        Ash.Resource.Builder.build_action_change(
+          {AshDoubleEntry.Balance.Changes.AdjustBalance,
+           can_add_money?: AshDoubleEntry.Balance.Info.balance_data_layer_can_add_money?(dsl)}
+        )
+      ],
+      arguments: [
+        Ash.Resource.Builder.build_action_argument(:from_account_id, :uuid, allow_nil?: false),
+        Ash.Resource.Builder.build_action_argument(:to_account_id, :uuid, allow_nil?: false),
+        Ash.Resource.Builder.build_action_argument(:delta, AshMoney.Types.Money,
+          allow_nil?: false
+        ),
+        Ash.Resource.Builder.build_action_argument(:transfer_id, AshDoubleEntry.ULID,
+          allow_nil?: false
+        )
+      ]
     )
     |> Ash.Resource.Builder.add_identity(:unique_references, [:account_id, :transfer_id],
       pre_check_with: pre_check_with(dsl)

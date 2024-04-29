@@ -80,77 +80,55 @@ defmodule AshDoubleEntry.Transfer.Changes.VerifyTransfer do
             amount_delta
           )
 
-        unless changeset.action.type == :destroy do
-          changeset.resource
-          |> AshDoubleEntry.Transfer.Info.transfer_balance_resource!()
-          |> Ash.Changeset.for_create(
-            :upsert_balance,
-            %{
-              account_id: from_account.id,
-              transfer_id: result.id,
-              balance: new_from_account_balance,
-              account: from_account
-            },
-            Ash.Context.to_opts(context,
-              domain: changeset.domain,
-              skip_unknown_inputs: [:account_id, :transfer_id, :balance, :account]
-            )
-          )
-          |> Ash.create!()
+        balance_resource =
+          AshDoubleEntry.Transfer.Info.transfer_balance_resource!(changeset.resource)
 
-          changeset.resource
-          |> AshDoubleEntry.Transfer.Info.transfer_balance_resource!()
-          |> Ash.Changeset.for_create(
+        unless changeset.action.type == :destroy do
+          Ash.bulk_create!(
+            [
+              %{
+                account_id: from_account.id,
+                transfer_id: result.id,
+                balance: new_from_account_balance
+              },
+              %{
+                account_id: to_account.id,
+                transfer_id: result.id,
+                balance: new_to_account_balance
+              }
+            ],
+            balance_resource,
             :upsert_balance,
-            %{
-              account_id: to_account.id,
-              transfer_id: result.id,
-              balance: new_to_account_balance
-            },
             Ash.Context.to_opts(context,
               domain: changeset.domain,
-              skip_unknown_inputs: [:account_id, :transfer_id, :balance]
+              upsert_fields: [:balance],
+              return_errors?: true,
+              stop_on_error?: true
             )
           )
-          |> Ash.create!()
         end
 
-        # Turn this into a bulk update when we support it in Ash core
-        changeset.resource
-        |> AshDoubleEntry.Transfer.Info.transfer_balance_resource!()
-        |> Ash.Query.filter(account_id in ^[from_account.id, to_account.id])
-        |> Ash.Query.filter(transfer_id > ^result.id)
-        |> Ash.stream!(Ash.Context.to_opts(context, domain: changeset.domain))
-        |> Stream.map(fn balance ->
-          amount_delta =
-            if changeset.action.type == :destroy do
-              Money.mult!(amount_delta, -1)
-            else
-              amount_delta
-            end
-
-          if balance.account_id == from_account.id do
-            %{
-              account_id: balance.account_id,
-              transfer_id: balance.transfer_id,
-              balance: Money.sub!(balance.balance, amount_delta)
-            }
+        amount_delta =
+          if changeset.action.type == :destroy do
+            Money.mult!(amount_delta, -1)
           else
-            %{
-              account_id: balance.account_id,
-              transfer_id: balance.transfer_id,
-              balance: Money.add!(balance.balance, amount_delta)
-            }
+            amount_delta
           end
-        end)
-        |> Ash.bulk_create!(
-          AshDoubleEntry.Transfer.Info.transfer_balance_resource!(changeset.resource),
-          :upsert_balance,
+
+        Ash.bulk_update!(
+          balance_resource,
+          :adjust_balance,
+          %{
+            from_account_id: from_account.id,
+            to_account_id: to_account.id,
+            transfer_id: result.id,
+            delta: amount_delta
+          },
           Ash.Context.to_opts(context,
             domain: changeset.domain,
+            strategy: [:atomic, :stream, :atomic_batches],
             return_errors?: true,
-            stop_on_error?: true,
-            upsert_fields: [:balance]
+            stop_on_error?: true
           )
         )
 
@@ -174,16 +152,15 @@ defmodule AshDoubleEntry.Transfer.Changes.VerifyTransfer do
       Ash.Changeset.before_action(changeset, fn changeset ->
         balance_resource
         |> Ash.Query.filter(transfer_id == ^changeset.data.id)
-        |> Ash.stream!(Ash.Context.to_opts(context, authorize?: false, domain: changeset.domain))
-        |> Enum.each(fn balance ->
-          balance
-          |> Ash.Changeset.for_destroy(
-            destroy_action,
-            %{},
-            Ash.Context.to_opts(context, authorize?: false, domain: changeset.domain)
+        |> Ash.bulk_destroy!(
+          destroy_action,
+          %{},
+          Ash.Context.to_opts(context,
+            authorize?: false,
+            domain: changeset.domain,
+            strategy: [:stream, :atomic, :atomic_batches]
           )
-          |> Ash.destroy!()
-        end)
+        )
 
         changeset
       end)

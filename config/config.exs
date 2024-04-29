@@ -20,6 +20,9 @@ if config_env() == :test do
   config :ash, :disable_async?, true
 end
 
+config :ash, :known_types, [AshMoney.Types.Money]
+config :logger, level: :error
+
 config :spark, :formatter,
   remove_parens?: true,
   "Ash.Resource": []
