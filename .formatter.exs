@@ -2,6 +2,7 @@
 spark_locals_without_parens = [
   account_resource: 1,
   balance_resource: 1,
+  data_layer_can_add_money?: 1,
   money_composite_type?: 1,
   open_action_accept: 1,
   pre_check_identities_with: 1,
