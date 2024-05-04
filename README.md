@@ -1,22 +1,21 @@
+![Logo](https://github.com/ash-project/ash/blob/main/logos/cropped-for-header-black-text.png?raw=true#gh-light-mode-only)
+![Logo](https://github.com/ash-project/ash/blob/main/logos/cropped-for-header-white-text.png?raw=true#gh-dark-mode-only)
+
+![Elixir CI](https://github.com/ash-project/ash_double_entry/workflows/CI/badge.svg)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+[![Hex version badge](https://img.shields.io/hexpm/v/ash_double_entry.svg)](https://hex.pm/packages/ash_double_entry)
+[![Hexdocs badge](https://img.shields.io/badge/docs-hexdocs-purple)](https://hexdocs.pm/ash_double_entry)
+
 # AshDoubleEntry
 
-An extensible double entry system built using [Ash](ash-hq.org) resources.
+Welcome! This is the extension for building a double entry accounting system in [Ash](https://hexdocs.pm/ash). This extension provides the basic building blocks for you to extend as necessary.
 
-See the [getting started guide](https://hexdocs.pm/ash_double_entry/get-started-with-double-entry.html) to
-setup the project!
+## Tutorials
 
-## Installation
+- [Getting Started with AshDoubleEntry](documentation/tutorials/getting-started-with-ash-double-entry.md)
 
-The package can be installed by adding `ash_double_entry` to your list of dependencies in `mix.exs`:
+## Reference
 
-```elixir
-def deps do
-  [
-    {:ash_double_entry, "~> 1.0.0-rc.1"}
-  ]
-end
-```
-
-# Upgrading from 0.1 to 0.2
-
-This is a breaking change, that changes from using a currency & decimal amount to using `ash_money`. There is no way to configure it to use the old behavior, as maintaining both is not reasonable.
+- [AshDoubleEntry.Account DSL](documentation/dsls/DSL:-AshDoubleEntry.Account.md)
+- [AshDoubleEntry.Transfer DSL](documentation/dsls/DSL:-AshDoubleEntry.Transfer.md)
+- [AshDoubleEntry.Balance DSL](documentation/dsls/DSL:-AshDoubleEntry.Balance.md)

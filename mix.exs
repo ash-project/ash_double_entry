@@ -64,7 +64,7 @@ defmodule AshDoubleEntry.MixProject do
 
   defp docs do
     [
-      main: "get-started-with-double-entry",
+      main: "readme",
       source_ref: "v#{@version}",
       logo: "logos/small-logo.png",
       before_closing_head_tag: fn type ->
@@ -83,7 +83,8 @@ defmodule AshDoubleEntry.MixProject do
         end
       end,
       extras: [
-        "documentation/tutorials/get-started-with-double-entry.md",
+        {"README.md", title: "Home"},
+        "documentation/tutorials/getting-started-with-ash-double-entry.md",
         "documentation/dsls/DSL:-AshDoubleEntry.Account.md",
         "documentation/dsls/DSL:-AshDoubleEntry.Balance.md",
         "documentation/dsls/DSL:-AshDoubleEntry.Transfer.md"

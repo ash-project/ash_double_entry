@@ -14,6 +14,12 @@ Ash Double Entry is implemented as a set of Ash resource extensions. You build t
 
 Follow the setup guide for `AshMoney`. If you are using with `AshPostgres`, be sure to include the `:ex_money_sql` dependency in your `mix.exs`.
 
+### Add the dependency
+
+```elixir
+{:ash_double_entry, "~> 1.0.0-rc.0"}
+```
+
 ### Define your account resource
 
 #### Example
