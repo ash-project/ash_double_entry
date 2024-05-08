@@ -87,13 +87,17 @@ defmodule AshDoubleEntry.MixProject do
         "documentation/tutorials/getting-started-with-ash-double-entry.md",
         "documentation/dsls/DSL:-AshDoubleEntry.Account.md",
         "documentation/dsls/DSL:-AshDoubleEntry.Balance.md",
-        "documentation/dsls/DSL:-AshDoubleEntry.Transfer.md"
+        "documentation/dsls/DSL:-AshDoubleEntry.Transfer.md",
+        "CHANGELOG.md"
       ],
       groups_for_extras: [
         Tutorials: ~r'documentation/tutorials',
         "How To": ~r'documentation/how_to',
         Topics: ~r'documentation/topics',
-        DSLs: ~r'documentation/dsls'
+        DSLs: ~r'documentation/dsls',
+        "About AshDoubleEntry": [
+          "CHANGELOG.md"
+        ]
       ],
       groups_for_modules: [
         Introspection: [
