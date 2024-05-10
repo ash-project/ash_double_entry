@@ -1,7 +1,7 @@
 defmodule AshDoubleEntry.MixProject do
   use Mix.Project
 
-  @version "1.0.0-rc.1"
+  @version "1.0.0"
   @description """
   A customizable double entry bookkeeping system backed by Ash resources.
   """
@@ -121,8 +121,8 @@ defmodule AshDoubleEntry.MixProject do
   # Run "mix help deps" to learn about dependencies.
   defp deps do
     [
-      {:ash, ash_version("~> 3.0.0-rc")},
-      {:ash_money, "~> 0.1.6-rc"},
+      {:ash, ash_version("~> 3.0")},
+      {:ash_money, "~> 0.1"},
       {:ex_money_sql, "~> 1.10"},
       # dev/test dependencies
       {:git_ops, "~> 2.5", only: [:dev, :test]},

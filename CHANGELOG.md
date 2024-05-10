@@ -5,6 +5,11 @@ See [Conventional Commits](Https://conventionalcommits.org) for commit guideline
 
 <!-- changelog -->
 
+## [v1.0.0](https://github.com/ash-project/ash_double_entry/compare/v1.0.0-rc.1...v1.0.0) (2024-05-10)
+
+
+
+
 ## [v1.0.0-rc.1](https://github.com/ash-project/ash_double_entry/compare/v1.0.0-rc.0...v1.0.0-rc.1) (2024-04-29)
 
 
