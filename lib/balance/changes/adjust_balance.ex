@@ -32,7 +32,7 @@ defmodule AshDoubleEntry.Balance.Changes.AdjustBalance do
          balance:
            expr(
              if account_id == ^changeset.arguments.from_account_id do
-               ^atomic_ref(:balance) - ^amount_delta
+               ^atomic_ref(:balance) + -(^amount_delta)
              else
                ^atomic_ref(:balance) + ^amount_delta
              end
