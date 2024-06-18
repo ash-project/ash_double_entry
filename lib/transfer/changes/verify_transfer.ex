@@ -57,7 +57,7 @@ defmodule AshDoubleEntry.Transfer.Changes.VerifyTransfer do
           changeset.resource
           |> AshDoubleEntry.Transfer.Info.transfer_account_resource!()
           |> Ash.Query.filter(id in ^[from_account_id, to_account_id])
-          |> Ash.Query.set_context(%{ash_authentication?: true})
+          |> Ash.Query.set_context(%{ash_double_entry?: true})
           |> Ash.Query.for_read(
             :lock_accounts,
             %{},
