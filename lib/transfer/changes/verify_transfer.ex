@@ -57,10 +57,14 @@ defmodule AshDoubleEntry.Transfer.Changes.VerifyTransfer do
           changeset.resource
           |> AshDoubleEntry.Transfer.Info.transfer_account_resource!()
           |> Ash.Query.filter(id in ^[from_account_id, to_account_id])
+          |> Ash.Query.set_context(%{ash_authentication?: true})
           |> Ash.Query.for_read(
             :lock_accounts,
             %{},
-            Ash.Context.to_opts(context, authorize?: false, domain: changeset.domain)
+            Ash.Context.to_opts(context,
+              authorize?: authorize?(changeset.domain),
+              domain: changeset.domain
+            )
           )
           |> Ash.Query.load(balance_as_of_ulid: %{ulid: result.id})
           |> Ash.read!()
@@ -130,6 +134,11 @@ defmodule AshDoubleEntry.Transfer.Changes.VerifyTransfer do
             return_errors?: true,
             stop_on_error?: true
           )
+          |> Keyword.update(
+            :context,
+            %{ash_double_entry?: true},
+            &Map.put(&1, :ash_double_entry?, true)
+          )
         )
 
         {:ok, result}
@@ -152,11 +161,12 @@ defmodule AshDoubleEntry.Transfer.Changes.VerifyTransfer do
       Ash.Changeset.before_action(changeset, fn changeset ->
         balance_resource
         |> Ash.Query.filter(transfer_id == ^changeset.data.id)
+        |> Ash.Query.set_context(%{ash_double_entry?: true})
         |> Ash.bulk_destroy!(
           destroy_action,
           %{},
           Ash.Context.to_opts(context,
-            authorize?: false,
+            authorize?: authorize?(changeset.domain),
             domain: changeset.domain,
             strategy: [:stream, :atomic, :atomic_batches]
           )
@@ -168,4 +178,6 @@ defmodule AshDoubleEntry.Transfer.Changes.VerifyTransfer do
       changeset
     end
   end
+
+  defp authorize?(domain), do: Ash.Domain.Info.authorize(domain) == :always
 end

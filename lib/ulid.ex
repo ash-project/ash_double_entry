@@ -1,6 +1,6 @@
 defmodule AshDoubleEntry.ULID do
   @moduledoc """
-  An Ecto type for ULID strings.
+  An Ash type for ULID strings.
   """
 
   use Ash.Type
