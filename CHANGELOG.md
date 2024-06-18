@@ -7,12 +7,9 @@ See [Conventional Commits](Https://conventionalcommits.org) for commit guideline
 
 ## [v1.0.2](https://github.com/ash-project/ash_double_entry/compare/v1.0.1...v1.0.2) (2024-06-18)
 
-
-
-
 ### Improvements:
 
-* set context indicating that `ash_authentication?` is performing an action
+- set context indicating that `ash_double_entry?` is performing an action
 
 ## [v1.0.1](https://github.com/ash-project/ash_double_entry/compare/v1.0.0...v1.0.1) (2024-05-11)
 
