@@ -87,61 +87,80 @@ defmodule AshDoubleEntry.Transfer.Changes.VerifyTransfer do
         balance_resource =
           AshDoubleEntry.Transfer.Info.transfer_balance_resource!(changeset.resource)
 
-        unless changeset.action.type == :destroy do
-          Ash.bulk_create!(
-            [
-              %{
-                account_id: from_account.id,
-                transfer_id: result.id,
-                balance: new_from_account_balance
-              },
-              %{
-                account_id: to_account.id,
-                transfer_id: result.id,
-                balance: new_to_account_balance
-              }
-            ],
-            balance_resource,
-            :upsert_balance,
-            Ash.Context.to_opts(context,
-              domain: changeset.domain,
-              upsert_fields: [:balance],
-              return_errors?: true,
-              stop_on_error?: true
+        bulk_destroy_errors =
+          unless changeset.action.type == :destroy do
+            Ash.bulk_create(
+              [
+                %{
+                  account_id: from_account.id,
+                  transfer_id: result.id,
+                  balance: new_from_account_balance
+                },
+                %{
+                  account_id: to_account.id,
+                  transfer_id: result.id,
+                  balance: new_to_account_balance
+                }
+              ],
+              balance_resource,
+              :upsert_balance,
+              Ash.Context.to_opts(context,
+                domain: changeset.domain,
+                upsert_fields: [:balance],
+                return_errors?: true,
+                stop_on_error?: true
+              )
             )
-          )
-        end
+          end
+          |> case do
+            nil ->
+              []
 
-        amount_delta =
-          if changeset.action.type == :destroy do
-            Money.mult!(amount_delta, -1)
-          else
-            amount_delta
+            %Ash.BulkResult{status: :success} ->
+              []
+
+            %Ash.BulkResult{errors: errors} ->
+              errors
           end
 
-        Ash.bulk_update!(
-          balance_resource,
-          :adjust_balance,
-          %{
-            from_account_id: from_account.id,
-            to_account_id: to_account.id,
-            transfer_id: result.id,
-            delta: amount_delta
-          },
-          Ash.Context.to_opts(context,
-            domain: changeset.domain,
-            strategy: [:atomic, :stream, :atomic_batches],
-            return_errors?: true,
-            stop_on_error?: true
-          )
-          |> Keyword.update(
-            :context,
-            %{ash_double_entry?: true},
-            &Map.put(&1, :ash_double_entry?, true)
-          )
-        )
+        case bulk_destroy_errors do
+          [] ->
+            amount_delta =
+              if changeset.action.type == :destroy do
+                Money.mult!(amount_delta, -1)
+              else
+                amount_delta
+              end
 
-        {:ok, result}
+            Ash.bulk_update(
+              balance_resource,
+              :adjust_balance,
+              %{
+                from_account_id: from_account.id,
+                to_account_id: to_account.id,
+                transfer_id: result.id,
+                delta: amount_delta
+              },
+              Ash.Context.to_opts(context,
+                domain: changeset.domain,
+                strategy: [:atomic, :stream, :atomic_batches],
+                return_errors?: true,
+                stop_on_error?: true
+              )
+              |> Keyword.update(
+                :context,
+                %{ash_double_entry?: true},
+                &Map.put(&1, :ash_double_entry?, true)
+              )
+            )
+            |> case do
+              %Ash.BulkResult{status: :success} -> {:ok, result}
+              %Ash.BulkResult{errors: errors} -> {:error, errors}
+            end
+
+          errors ->
+            {:error, errors}
+        end
       end)
     end
   end
@@ -162,7 +181,7 @@ defmodule AshDoubleEntry.Transfer.Changes.VerifyTransfer do
         balance_resource
         |> Ash.Query.filter(transfer_id == ^changeset.data.id)
         |> Ash.Query.set_context(%{ash_double_entry?: true})
-        |> Ash.bulk_destroy!(
+        |> Ash.bulk_destroy(
           destroy_action,
           %{},
           Ash.Context.to_opts(context,
@@ -171,8 +190,10 @@ defmodule AshDoubleEntry.Transfer.Changes.VerifyTransfer do
             strategy: [:stream, :atomic, :atomic_batches]
           )
         )
-
-        changeset
+        |> case do
+          %Ash.BulkResult{status: :success} -> changeset
+          %Ash.BulkResult{errors: errors} -> {:error, Ash.Changeset.add_error(changeset, errors)}
+        end
       end)
     else
       changeset
