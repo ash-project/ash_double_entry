@@ -38,7 +38,9 @@ defmodule AshDoubleEntry.Transfer.Transformers.AddStructure do
       attribute_writable?: true
     )
     |> Ash.Resource.Builder.add_action(:create, :transfer,
-      accept: [:amount, :timestamp, :from_account_id, :to_account_id]
+      accept:
+        [:amount, :timestamp, :from_account_id, :to_account_id] ++
+          AshDoubleEntry.Transfer.Info.transfer_create_accept!(dsl)
     )
     |> Ash.Resource.Builder.add_action(:read, :read_transfers,
       pagination: Ash.Resource.Builder.build_pagination(keyset?: true)
