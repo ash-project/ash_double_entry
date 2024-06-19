@@ -11,12 +11,12 @@ defmodule AshDoubleEntry.Transfer.Changes.VerifyTransfer do
   def change(changeset, _opts, context) do
     if changeset.action.type == :update and
          Enum.any?(
-           [:from_account_id, :to_account_id, :id],
+           [:from_account_id, :to_account_id, :id, :timestamp],
            &Ash.Changeset.changing_attribute?(changeset, &1)
          ) do
       Ash.Changeset.add_error(
         changeset,
-        "Cannot modify a transfer's from_account_id, to_account_id, or id"
+        "Cannot modify a transfer's from_account_id, to_account_id, id, or timestamp"
       )
     else
       changeset
@@ -66,7 +66,7 @@ defmodule AshDoubleEntry.Transfer.Changes.VerifyTransfer do
               domain: changeset.domain
             )
           )
-          |> Ash.Query.load(balance_as_of_ulid: %{ulid: result.id})
+          |> Ash.Query.load(balance_as_of: %{timestamp: result.timestamp})
           |> Ash.read!()
 
         from_account = Enum.find(accounts, &(&1.id == from_account_id))
@@ -74,13 +74,13 @@ defmodule AshDoubleEntry.Transfer.Changes.VerifyTransfer do
 
         new_from_account_balance =
           Money.sub!(
-            from_account.balance_as_of_ulid || Money.new!(0, from_account.currency),
+            from_account.balance_as_of || Money.new!(0, from_account.currency),
             amount_delta
           )
 
         new_to_account_balance =
           Money.add!(
-            to_account.balance_as_of_ulid || Money.new!(0, to_account.currency),
+            to_account.balance_as_of || Money.new!(0, to_account.currency),
             amount_delta
           )
 
@@ -94,12 +94,14 @@ defmodule AshDoubleEntry.Transfer.Changes.VerifyTransfer do
                 %{
                   account_id: from_account.id,
                   transfer_id: result.id,
-                  balance: new_from_account_balance
+                  balance: new_from_account_balance,
+                  timestamp: result.timestamp
                 },
                 %{
                   account_id: to_account.id,
                   transfer_id: result.id,
-                  balance: new_to_account_balance
+                  balance: new_to_account_balance,
+                  timestamp: result.timestamp
                 }
               ],
               balance_resource,

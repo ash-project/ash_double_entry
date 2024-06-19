@@ -67,7 +67,6 @@ end
 - Adds a `has_many` relationship called `balances`, referring to all related balances of an account
 - Adds an aggregate called `balance`, referring to the latest balance as a `decimal` for that account
 - Adds the following calculations:
-- A `balance_as_of_ulid` calculation that takes an argument called `ulid`, which corresponds to a transfer id and returns the balance.
 - A `balance_as_of` calculation that takes a `utc_datetime_usec` and returns the balance as of that datetime.
 - Adds an identity called `unique_identifier` that ensures `identifier` is unique.
 
@@ -98,7 +97,7 @@ end
 #### What does this extension do?
 
 - Adds the following attributes
-  - `:id`, a `AshDoubleEntry.ULID` primary key which is sortable based on the `timestamp` of the transfer.
+  - `:id`, a `AshDoubleEntry.ULID` primary key which is sortable based on the `timestamp` of the transfer. We don't leverage this sortability for any features, but this helps optimize the storage and indexing of generated transfers tables.
   - `:amount`, a `AshMoney.Types.Money` representing the amount and currency of the transfer
   - `:timestamp`, a `:utc_datetime_usec` representing when the transfer occurred
   - `:inserted_at`, a `:utc_datetime_usec` timestamp

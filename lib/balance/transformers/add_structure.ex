@@ -31,6 +31,10 @@ defmodule AshDoubleEntry.Balance.Transformers.AddStructure do
         storage_type: storage_type
       ]
     )
+    |> Ash.Resource.Builder.add_new_attribute(:timestamp, :utc_datetime_usec,
+      allow_nil?: false,
+      default: &DateTime.utc_now/0
+    )
     |> Ash.Resource.Builder.add_new_relationship(
       :belongs_to,
       :transfer,
@@ -48,7 +52,7 @@ defmodule AshDoubleEntry.Balance.Transformers.AddStructure do
     )
     |> add_primary_read_action()
     |> Ash.Resource.Builder.add_action(:create, :upsert_balance,
-      accept: [:balance, :account_id, :transfer_id],
+      accept: [:balance, :account_id, :transfer_id, :timestamp],
       upsert?: true,
       upsert_identity: :unique_references
     )

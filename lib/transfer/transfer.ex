@@ -21,6 +21,7 @@ defmodule AshDoubleEntry.Transfer do
       ],
       create_accept: [
         type: {:wrap_list, :atom},
+        default: [],
         doc: "Additional attributes to accept when creating a transfer"
       ]
     ]
