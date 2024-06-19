@@ -18,6 +18,10 @@ defmodule AshDoubleEntry.Transfer do
       balance_resource: [
         type: {:spark, Ash.Resource},
         doc: "The resource being used for balances"
+      ],
+      create_accept: [
+        type: {:wrap_list, :atom},
+        doc: "Additional attributes to accept when creating a transfer"
       ]
     ]
   }
