@@ -9,11 +9,47 @@ defmodule AshDoubleEntry.Transfer.Transformers.AddStructure do
   def before?(_), do: false
 
   def transform(dsl) do
+    primary_key_type = AshDoubleEntry.Transfer.Info.transfer_primary_key_type!(dsl)
+
+    generator =
+      case AshDoubleEntry.Transfer.Info.transfer_primary_key_generator(dsl) do
+        {:ok, generator} ->
+          generator
+
+        :error ->
+          if primary_key_type == AshDoubleEntry.ULID do
+            &AshDoubleEntry.ULID.generate/0
+          else
+            raise Spark.Error.DslError,
+              module: Spark.Dsl.Transformer.get_persisted(dsl, :module),
+              path: [:transfer, :primary_key_generator],
+              message:
+                "Must configure a primary key generator if customizing the primary key type"
+          end
+      end
+
+    dsl =
+      case AshDoubleEntry.Transfer.Info.transfer_primary_key_generator_with_timestamp(dsl) do
+        :error ->
+          if primary_key_type == AshDoubleEntry.ULID do
+            Spark.Dsl.Transformer.set_option(
+              dsl_state,
+              [:transfer, :primary_key_generator_with_timestamp],
+              &AshDoubleEntry.ULID.generate/1
+            )
+          else
+            dsl
+          end
+
+        _ ->
+          dsl
+      end
+
     dsl
-    |> Ash.Resource.Builder.add_new_attribute(:id, AshDoubleEntry.ULID,
+    |> Ash.Resource.Builder.add_new_attribute(:id, primary_key_type,
       primary_key?: true,
       allow_nil?: false,
-      default: &AshDoubleEntry.ULID.generate/0,
+      default: generator,
       generated?: false
     )
     |> Ash.Resource.Builder.add_new_attribute(:amount, AshMoney.Types.Money, allow_nil?: false)

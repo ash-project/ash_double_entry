@@ -35,7 +35,7 @@ defmodule AshDoubleEntry.Balance.Transformers.AddStructure do
       :belongs_to,
       :transfer,
       AshDoubleEntry.Balance.Info.balance_transfer_resource!(dsl),
-      attribute_type: AshDoubleEntry.ULID,
+      attribute_type: AshDoubleEntry.Balance.Info.balance_transfer_primary_key_type!(dsl),
       allow_nil?: false,
       attribute_writable?: true
     )
@@ -73,7 +73,9 @@ defmodule AshDoubleEntry.Balance.Transformers.AddStructure do
         Ash.Resource.Builder.build_action_argument(:delta, AshMoney.Types.Money,
           allow_nil?: false
         ),
-        Ash.Resource.Builder.build_action_argument(:transfer_id, AshDoubleEntry.ULID,
+        Ash.Resource.Builder.build_action_argument(
+          :transfer_id,
+          AshDoubleEntry.Balance.Info.balance_transfer_primary_key_type!(dsl),
           allow_nil?: false
         )
       ]

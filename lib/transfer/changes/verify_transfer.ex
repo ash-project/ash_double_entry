@@ -30,9 +30,18 @@ defmodule AshDoubleEntry.Transfer.Changes.VerifyTransfer do
               timestamp -> DateTime.to_unix(timestamp, :millisecond)
             end
 
-          ulid = AshDoubleEntry.ULID.generate(timestamp)
+          id =
+            case AshDoubleEntry.Transfer.Info.primary_key_generator_with_timestamp(
+                   changeset.resource
+                 ) do
+              {:ok, generator} ->
+                generator.(timestamp)
 
-          Ash.Changeset.force_change_attribute(changeset, :id, ulid)
+              _ ->
+                AshDoubleEntry.Transfer.Info.primary_key_generator!(changeset.resource).()
+            end
+
+          Ash.Changeset.force_change_attribute(changeset, :id, id)
         else
           changeset
         end
@@ -66,7 +75,7 @@ defmodule AshDoubleEntry.Transfer.Changes.VerifyTransfer do
               domain: changeset.domain
             )
           )
-          |> Ash.Query.load(balance_as_of_ulid: %{ulid: result.id})
+          |> Ash.Query.load(balance_as_of: %{timestamp: result.timestamp})
           |> Ash.read!()
 
         from_account = Enum.find(accounts, &(&1.id == from_account_id))
@@ -74,13 +83,13 @@ defmodule AshDoubleEntry.Transfer.Changes.VerifyTransfer do
 
         new_from_account_balance =
           Money.sub!(
-            from_account.balance_as_of_ulid || Money.new!(0, from_account.currency),
+            from_account.balance_as_of || Money.new!(0, from_account.currency),
             amount_delta
           )
 
         new_to_account_balance =
           Money.add!(
-            to_account.balance_as_of_ulid || Money.new!(0, to_account.currency),
+            to_account.balance_as_of || Money.new!(0, to_account.currency),
             amount_delta
           )
 

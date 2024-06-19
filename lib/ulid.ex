@@ -73,7 +73,7 @@ defmodule AshDoubleEntry.ULID do
   end
 
   def generate(timestamp) do
-    {:ok, ulid} = encode(bingenerate(timestamp))
+    {:ok, ulid} = encode(bingenerate(timestamp || System.system_time(:millisecond)))
     ulid
   end
 

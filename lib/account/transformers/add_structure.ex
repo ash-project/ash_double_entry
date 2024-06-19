@@ -47,28 +47,9 @@ defmodule AshDoubleEntry.Account.Transformers.AddStructure do
       AshDoubleEntry.Account.Info.account_balance_resource!(dsl),
       destination_attribute: :account_id
     )
-    |> add_balance_as_of_ulid_calculation()
     |> add_balance_as_of_calculation()
     |> Ash.Resource.Builder.add_identity(:unique_identifier, [:identifier],
       pre_check_with: pre_check_with(dsl)
-    )
-  end
-
-  defbuilder add_balance_as_of_ulid_calculation(dsl) do
-    Ash.Resource.Builder.add_calculation(
-      dsl,
-      :balance_as_of_ulid,
-      AshMoney.Types.Money,
-      {AshDoubleEntry.Account.Calculations.BalanceAsOfUlid,
-       [resource: Spark.Dsl.Transformer.get_persisted(dsl, :module)]},
-      arguments: [
-        Ash.Resource.Builder.build_calculation_argument(
-          :ulid,
-          AshDoubleEntry.ULID,
-          allow_nil?: false,
-          allow_expr?: true
-        )
-      ]
     )
   end
 

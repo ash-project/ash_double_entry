@@ -22,6 +22,22 @@ defmodule AshDoubleEntry.Transfer do
       create_accept: [
         type: {:wrap_list, :atom},
         doc: "Additional attributes to accept when creating a transfer"
+      ],
+      primary_key_type: [
+        type: Ash.OptionsHelpers.ash_type(),
+        default: :uuid,
+        doc: "The primary key type to use."
+      ],
+      primary_key_generator: [
+        type: {:function, 0},
+        default: &Ash.UUID.generate/0,
+        doc:
+          "A function that generates a primary key for the transfer. Set automatically if primary key type is `AshDoubleEntry.ULID`."
+      ],
+      primary_key_generator_with_timestamp: [
+        type: {:function, 1},
+        doc:
+          "A function that generates a primary key for the transfer with a timestamp. Set automatically if primary key type is `AshDoubleEntry.ULID`."
       ]
     ]
   }

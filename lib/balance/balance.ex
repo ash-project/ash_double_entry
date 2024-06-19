@@ -29,6 +29,11 @@ defmodule AshDoubleEntry.Balance do
         type: :boolean,
         doc: "Whether or not the data layer supports adding money.",
         default: true
+      ],
+      transfer_primary_key_type: [
+        type: Ash.OptionsHelpers.type(),
+        default: :uuid,
+        doc: "The type of the primary key for the transfer resource."
       ]
     ]
   }
