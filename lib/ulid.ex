@@ -78,6 +78,31 @@ defmodule AshDoubleEntry.ULID do
   end
 
   @doc """
+  Generates a Crockford Base32 encoded ULID, guaranteed to sort equal to or after any other ULID generated for the same timestamp.
+
+  Do not use this for storage, only for generating comparators, i.e "balance as of a given ulid".
+
+  If a value is provided for `timestamp`, the generated ULID will be for the provided timestamp.
+  Otherwise, a ULID will be generated for the current time.
+
+  Arguments:
+
+  * `timestamp`: A Unix timestamp with millisecond precision.
+  """
+  def generate_last(timestamp \\ System.system_time(:millisecond))
+
+  def generate_last(%DateTime{} = datetime) do
+    datetime
+    |> DateTime.to_unix(:millisecond)
+    |> generate_last()
+  end
+
+  def generate_last(timestamp) do
+    {:ok, ulid} = encode(bingenerate_last(timestamp))
+    ulid
+  end
+
+  @doc """
   Generates a binary ULID.
 
   If a value is provided for `timestamp`, the generated ULID will be for the provided timestamp.
@@ -89,6 +114,22 @@ defmodule AshDoubleEntry.ULID do
   """
   def bingenerate(timestamp \\ System.system_time(:millisecond)) do
     <<timestamp::unsigned-size(48), :crypto.strong_rand_bytes(10)::binary>>
+  end
+
+  @doc """
+  Generates a binary ULID.
+
+  Do not use this for storage, only for generating comparators, i.e "balance as of a given ulid".
+
+  If a value is provided for `timestamp`, the generated ULID will be for the provided timestamp.
+  Otherwise, a ULID will be generated for the current time.
+
+  Arguments:
+
+  * `timestamp`: A Unix timestamp with millisecond precision.
+  """
+  def bingenerate_last(timestamp \\ System.system_time(:millisecond)) do
+    <<timestamp::unsigned-size(48), 255, 255, 255, 255, 255, 255, 255, 255, 255, 255>>
   end
 
   @doc false

@@ -12,6 +12,6 @@ defmodule AshDoubleEntry.Account.Calculations.BalanceAsOf do
 
   @doc false
   def ulid(timestamp) do
-    AshDoubleEntry.ULID.generate(timestamp)
+    AshDoubleEntry.ULID.generate_last(timestamp)
   end
 end
