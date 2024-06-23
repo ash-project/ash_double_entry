@@ -9,8 +9,10 @@ defmodule AshDoubleEntry.Transfer.Changes.VerifyTransfer do
   require Ash.Query
 
   def atomic(changeset, opts, context) do
-    if AshDoubleEntry.Transfer.Info.transfer_destroy_balances?(changeset.resource) do
-      {:error, "Cannot destroy a transfer atomically if balances must be destroyed manually"}
+    if AshDoubleEntry.Transfer.Info.transfer_destroy_balances?(changeset.resource) ||
+         Ash.Changeset.changing_attribute?(changeset, :amount) do
+      {:error,
+       "Cannot destroy a transfer atomically if balances must be destroyed manually, or if balance is being updated"}
     else
       {:ok, change(changeset, opts, context)}
     end
@@ -52,7 +54,16 @@ defmodule AshDoubleEntry.Transfer.Changes.VerifyTransfer do
           if changeset.action.type == :destroy do
             Money.new!(0, new_amount.currency)
           else
-            changeset.data.amount || Money.new!(0, new_amount.currency)
+            case changeset.data do
+              %{amount: nil} ->
+                Money.new!(0, new_amount.currency)
+
+              %Ash.Changeset.OriginalDataNotAvailable{} ->
+                Money.new!(0, new_amount.currency)
+
+              %{amount: amount} ->
+                amount
+            end
           end
 
         amount_delta =

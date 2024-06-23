@@ -26,7 +26,8 @@ defmodule AshDoubleEntry.Transfer do
       ],
       destroy_balances?: [
         type: :boolean,
-        doc: "Whether or not balances must be manually destroyed. See the getting started guide for more.",
+        doc:
+          "Whether or not balances must be manually destroyed. See the getting started guide for more.",
         default: false
       ]
     ]
