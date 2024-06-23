@@ -37,6 +37,11 @@ defmodule AshDoubleEntry.Transfer.Transformers.AddStructure do
       AshDoubleEntry.Transfer.Info.transfer_account_resource!(dsl),
       attribute_writable?: true
     )
+    |> Ash.Resource.Builder.add_new_relationship(
+      :has_many,
+      :balances,
+      AshDoubleEntry.Transfer.Info.transfer_balance_resource!(dsl)
+    )
     |> Ash.Resource.Builder.add_action(:create, :transfer,
       accept:
         [:amount, :timestamp, :from_account_id, :to_account_id] ++
@@ -46,6 +51,7 @@ defmodule AshDoubleEntry.Transfer.Transformers.AddStructure do
       pagination: Ash.Resource.Builder.build_pagination(keyset?: true)
     )
     |> Ash.Resource.Builder.add_change({AshDoubleEntry.Transfer.Changes.VerifyTransfer, []},
+      only_when_valid?: true,
       on: [:create, :update, :destroy]
     )
   end

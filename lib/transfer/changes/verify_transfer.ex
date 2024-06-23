@@ -8,6 +8,14 @@ defmodule AshDoubleEntry.Transfer.Changes.VerifyTransfer do
   use Ash.Resource.Change
   require Ash.Query
 
+  def atomic(changeset, opts, context) do
+    if AshDoubleEntry.Transfer.Info.transfer_destroy_balances?(changeset.resource) do
+      {:error, "Cannot destroy a transfer atomically if balances must be destroyed manually"}
+    else
+      {:ok, change(changeset, opts, context)}
+    end
+  end
+
   def change(changeset, _opts, context) do
     if changeset.action.type == :update and
          Enum.any?(
@@ -19,24 +27,21 @@ defmodule AshDoubleEntry.Transfer.Changes.VerifyTransfer do
         "Cannot modify a transfer's from_account_id, to_account_id, or id"
       )
     else
-      changeset
-      |> Ash.Changeset.before_action(fn changeset ->
-        if changeset.action.type == :create do
-          timestamp = Ash.Changeset.get_attribute(changeset, :timestamp)
+      if changeset.action.type == :create do
+        timestamp = Ash.Changeset.get_attribute(changeset, :timestamp)
 
-          timestamp =
-            case timestamp do
-              nil -> System.system_time(:millisecond)
-              timestamp -> DateTime.to_unix(timestamp, :millisecond)
-            end
+        timestamp =
+          case timestamp do
+            nil -> System.system_time(:millisecond)
+            timestamp -> DateTime.to_unix(timestamp, :millisecond)
+          end
 
-          ulid = AshDoubleEntry.ULID.generate(timestamp)
+        ulid = AshDoubleEntry.ULID.generate(timestamp)
 
-          Ash.Changeset.force_change_attribute(changeset, :id, ulid)
-        else
-          changeset
-        end
-      end)
+        Ash.Changeset.force_change_attribute(changeset, :id, ulid)
+      else
+        changeset
+      end
       |> maybe_destroy_balances(context)
       |> Ash.Changeset.after_action(fn changeset, result ->
         from_account_id = Ash.Changeset.get_attribute(changeset, :from_account_id)
@@ -192,7 +197,7 @@ defmodule AshDoubleEntry.Transfer.Changes.VerifyTransfer do
         )
         |> case do
           %Ash.BulkResult{status: :success} -> changeset
-          %Ash.BulkResult{errors: errors} -> {:error, Ash.Changeset.add_error(changeset, errors)}
+          %Ash.BulkResult{errors: errors} -> Ash.Changeset.add_error(changeset, errors)
         end
       end)
     else

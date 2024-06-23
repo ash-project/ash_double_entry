@@ -91,6 +91,11 @@ defmodule YourApp.Ledger.Transfer do
     # configure the other resources it will interact with
     account_resource YourApp.Ledger.Account
     balance_resource YourApp.Ledger.Balance
+
+    # you only need this if you are using `postgres`
+    # and so cannot add the `references` block shown below
+
+    # destroy_balances? true
   end
 end
 ```
@@ -122,6 +127,10 @@ defmodule YourApp.Ledger.Balance do
   postgres do
     table "balances"
     repo YourApp.Repo
+
+    references do
+      reference :transfer, on_delete: :delete
+    end
   end
 
   balance do
@@ -160,6 +169,13 @@ defmodule YourApp.Ledger.Balance do
   end
 end
 ```
+
+> ### cascading destroys {: .warning}
+>
+> If you are not using a data layer capable of automatic cascade
+> deletion, you must add `destroy_balances? true` to the `transfer`
+> resource! We do this with the `references` block in `ash_postgres`
+> as shown above.
 
 #### What does this extension do?
 

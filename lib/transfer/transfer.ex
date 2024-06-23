@@ -23,6 +23,11 @@ defmodule AshDoubleEntry.Transfer do
         type: {:wrap_list, :atom},
         default: [],
         doc: "Additional attributes to accept when creating a transfer"
+      ],
+      destroy_balances?: [
+        type: :boolean,
+        doc: "Whether or not balances must be manually destroyed. See the getting started guide for more.",
+        default: false
       ]
     ]
   }
