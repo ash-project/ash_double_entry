@@ -17,7 +17,7 @@ Follow the setup guide for `AshMoney`. If you are using with `AshPostgres`, be s
 ### Add the dependency
 
 ```elixir
-{:ash_double_entry, "~> 1.0.0-rc.0"}
+{:ash_double_entry, "~> 1.0.3"}
 ```
 
 ### Define your account resource
