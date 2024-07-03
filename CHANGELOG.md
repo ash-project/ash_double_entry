@@ -5,6 +5,21 @@ See [Conventional Commits](Https://conventionalcommits.org) for commit guideline
 
 <!-- changelog -->
 
+## [v1.0.4](https://github.com/ash-project/ash_double_entry/compare/v1.0.3...v1.0.4) (2024-07-03)
+
+
+
+
+### Bug Fixes:
+
+* better validations around atomics
+
+### Improvements:
+
+* allow skipping balance updates on request
+
+* don't destroy balances by default
+
 ## [v1.0.3](https://github.com/ash-project/ash_double_entry/compare/v1.0.2...v1.0.3) (2024-06-23)
 
 
