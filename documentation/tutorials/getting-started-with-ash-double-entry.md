@@ -146,27 +146,6 @@ defmodule YourApp.Ledger.Balance do
       pagination keyset?: true, required?: false
     end
   end
-
-  changes do
-    # add custom behavior. In this case, we're preventing certain balances from being less than zero
-    change after_action(&validate_balance/2)
-  end
-
-  defp validate_balance(changeset, result) do
-    account = result |> Ash.load!(:account) |> Map.get(:account)
-
-    if account.allow_zero_balance == false && Money.negative?(result.balance) do
-
-      {:error,
-        Ash.Error.Changes.InvalidAttribute.exception(
-          value: result.balance,
-          field: :balance,
-          message: "balance cannot be negative"
-      )}
-    else
-      {:ok, result}
-    end
-  end
 end
 ```
 
