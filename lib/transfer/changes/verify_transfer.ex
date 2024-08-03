@@ -165,6 +165,7 @@ defmodule AshDoubleEntry.Transfer.Changes.VerifyTransfer do
                 },
                 Ash.Context.to_opts(context,
                   domain: changeset.domain,
+                  authorize?: authorize?(changeset.domain),
                   strategy: [:atomic, :stream, :atomic_batches],
                   return_errors?: true,
                   stop_on_error?: true
