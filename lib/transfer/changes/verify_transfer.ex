@@ -127,6 +127,7 @@ defmodule AshDoubleEntry.Transfer.Changes.VerifyTransfer do
                 :upsert_balance,
                 Ash.Context.to_opts(context,
                   domain: changeset.domain,
+                  authorize?: authorize?(changeset.domain),
                   upsert_fields: [:balance],
                   return_errors?: true,
                   stop_on_error?: true
