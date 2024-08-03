@@ -5,6 +5,15 @@ See [Conventional Commits](Https://conventionalcommits.org) for commit guideline
 
 <!-- changelog -->
 
+## [v1.0.5](https://github.com/ash-project/ash_double_entry/compare/v1.0.4...v1.0.5) (2024-08-03)
+
+
+
+
+### Bug Fixes:
+
+* set `authorize?` properly when creating balances
+
 ## [v1.0.4](https://github.com/ash-project/ash_double_entry/compare/v1.0.3...v1.0.4) (2024-07-03)
 
 
