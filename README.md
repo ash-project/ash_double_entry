@@ -16,6 +16,6 @@ Welcome! This is the extension for building a double entry accounting system in 
 
 ## Reference
 
-- [AshDoubleEntry.Account DSL](documentation/dsls/DSL:-AshDoubleEntry.Account.md)
-- [AshDoubleEntry.Transfer DSL](documentation/dsls/DSL:-AshDoubleEntry.Transfer.md)
-- [AshDoubleEntry.Balance DSL](documentation/dsls/DSL:-AshDoubleEntry.Balance.md)
+- [AshDoubleEntry.Account DSL](documentation/dsls/DSL-AshDoubleEntry.Account.md)
+- [AshDoubleEntry.Transfer DSL](documentation/dsls/DSL-AshDoubleEntry.Transfer.md)
+- [AshDoubleEntry.Balance DSL](documentation/dsls/DSL-AshDoubleEntry.Balance.md)
