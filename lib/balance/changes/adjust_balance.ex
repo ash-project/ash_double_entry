@@ -27,12 +27,14 @@ defmodule AshDoubleEntry.Balance.Changes.AdjustBalance do
     end
 
     if opts[:can_add_money?] do
+      negative_amount_delta = Money.mult!(amount_delta, -1)
+
       {:atomic,
        %{
          balance:
            expr(
              if account_id == ^changeset.arguments.from_account_id do
-               ^atomic_ref(:balance) + -(^amount_delta)
+               ^atomic_ref(:balance) + ^negative_amount_delta
              else
                ^atomic_ref(:balance) + ^amount_delta
              end
