@@ -326,17 +326,9 @@ defmodule AshDoubleEntryTest do
                Money.new!(:USD, 0)
              )
 
-      transfer_2 |> Ash.destroy!()
-
-      assert Money.equal?(
-               Ash.load!(account_one, :balance_as_of).balance_as_of,
-               Money.new!(:USD, -20)
-             )
-
-      assert Money.equal?(
-               Ash.load!(account_two, :balance_as_of).balance_as_of,
-               Money.new!(:USD, 20)
-             )
+      assert_raise Ash.Error.Invalid, ~r/balance cannot be negative/, fn ->
+        transfer_2 |> Ash.destroy!()
+      end
 
       transfer_1 |> Ash.destroy!()
 
