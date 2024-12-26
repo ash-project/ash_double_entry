@@ -126,7 +126,7 @@ defmodule AshDoubleEntry.MixProject do
       {:ex_money_sql, "~> 1.10"},
       # dev/test dependencies
       {:git_ops, "~> 2.5", only: [:dev, :test]},
-      {:ex_doc, github: "elixir-lang/ex_doc", only: [:dev, :test], runtime: false},
+      {:ex_doc, "~> 0.36.1", only: [:dev, :test], runtime: false},
       {:ex_check, "~> 0.14", only: [:dev, :test]},
       {:credo, ">= 0.0.0", only: [:dev, :test], runtime: false},
       {:dialyxir, ">= 0.0.0", only: [:dev, :test], runtime: false},
