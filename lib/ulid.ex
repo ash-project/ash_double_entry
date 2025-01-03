@@ -49,7 +49,10 @@ defmodule AshDoubleEntry.ULID do
   """
   def cast_stored(nil, _), do: {:ok, nil}
   def cast_stored(<<_::unsigned-size(128)>> = bytes, _), do: encode(bytes)
-  def cast_stored(_, _), do: :error
+
+  def cast_stored(value, constraints) do
+    cast_input(value, constraints)
+  end
 
   @doc false
   def autogenerate, do: generate()
@@ -148,6 +151,10 @@ defmodule AshDoubleEntry.ULID do
   end
 
   def encode(_), do: :error
+
+  def dump_to_embedded(value, constraints) do
+    cast_input(value, constraints)
+  end
 
   @compile {:inline, e: 1}
 

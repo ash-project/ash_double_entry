@@ -125,6 +125,7 @@ defmodule AshDoubleEntry.MixProject do
       {:ash_money, "~> 0.1"},
       {:ex_money_sql, "~> 1.10"},
       # dev/test dependencies
+      {:igniter, "~> 0.5", only: [:dev, :test]},
       {:git_ops, "~> 2.5", only: [:dev, :test]},
       {:ex_doc, "~> 0.36.1", only: [:dev, :test], runtime: false},
       {:ex_check, "~> 0.14", only: [:dev, :test]},
