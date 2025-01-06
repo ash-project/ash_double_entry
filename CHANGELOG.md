@@ -5,6 +5,17 @@ See [Conventional Commits](Https://conventionalcommits.org) for commit guideline
 
 <!-- changelog -->
 
+## [v1.0.7](https://github.com/ash-project/ash_double_entry/compare/v1.0.6...v1.0.7) (2025-01-06)
+
+
+
+
+### Bug Fixes:
+
+* add `dump_to_embedded` logic for `AshDoubleEntry.ULID`
+
+* do negation manually instead of in expression
+
 ## [v1.0.6](https://github.com/ash-project/ash_double_entry/compare/v1.0.5...v1.0.6) (2024-08-03)
 
 
