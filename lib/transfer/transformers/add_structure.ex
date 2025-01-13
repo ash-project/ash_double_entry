@@ -42,7 +42,7 @@ defmodule AshDoubleEntry.Transfer.Transformers.AddStructure do
       :balances,
       AshDoubleEntry.Transfer.Info.transfer_balance_resource!(dsl)
     )
-    |> Ash.Resource.Builder.add_action(:create, :transfer,
+    |> Ash.Resource.Builder.add_new_action(:create, :transfer,
       accept:
         [:amount, :timestamp, :from_account_id, :to_account_id] ++
           AshDoubleEntry.Transfer.Info.transfer_create_accept!(dsl)

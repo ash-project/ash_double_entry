@@ -24,13 +24,13 @@ defmodule AshDoubleEntry.Account.Transformers.AddStructure do
       :string,
       allow_nil?: false
     )
-    |> Ash.Resource.Builder.add_action(:create, :open,
+    |> Ash.Resource.Builder.add_new_action(:create, :open,
       accept:
         Enum.uniq(
           [:identifier, :currency] ++ AshDoubleEntry.Account.Info.account_open_action_accept!(dsl)
         )
     )
-    |> Ash.Resource.Builder.add_action(:read, :lock_accounts,
+    |> Ash.Resource.Builder.add_new_action(:read, :lock_accounts,
       preparations: [
         Ash.Resource.Builder.build_preparation(
           {AshDoubleEntry.Account.Preparations.LockForUpdate, []}
@@ -49,13 +49,13 @@ defmodule AshDoubleEntry.Account.Transformers.AddStructure do
     )
     |> add_balance_as_of_ulid_calculation()
     |> add_balance_as_of_calculation()
-    |> Ash.Resource.Builder.add_identity(:unique_identifier, [:identifier],
+    |> Ash.Resource.Builder.add_new_identity(:unique_identifier, [:identifier],
       pre_check_with: pre_check_with(dsl)
     )
   end
 
   defbuilder add_balance_as_of_ulid_calculation(dsl) do
-    Ash.Resource.Builder.add_calculation(
+    Ash.Resource.Builder.add_new_calculation(
       dsl,
       :balance_as_of_ulid,
       AshMoney.Types.Money,
@@ -73,7 +73,7 @@ defmodule AshDoubleEntry.Account.Transformers.AddStructure do
   end
 
   defbuilder add_balance_as_of_calculation(dsl) do
-    Ash.Resource.Builder.add_calculation(
+    Ash.Resource.Builder.add_new_calculation(
       dsl,
       :balance_as_of,
       AshMoney.Types.Money,

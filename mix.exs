@@ -84,7 +84,8 @@ defmodule AshDoubleEntry.MixProject do
       end,
       extras: [
         {"README.md", title: "Home"},
-        "documentation/tutorials/getting-started-with-ash-double-entry.md",
+        {"documentation/tutorials/getting-started-with-ash-double-entry.md",
+         title: "Get Started"},
         "documentation/dsls/DSL-AshDoubleEntry.Account.md",
         "documentation/dsls/DSL-AshDoubleEntry.Balance.md",
         "documentation/dsls/DSL-AshDoubleEntry.Transfer.md",

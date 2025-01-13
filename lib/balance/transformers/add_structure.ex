@@ -47,12 +47,12 @@ defmodule AshDoubleEntry.Balance.Transformers.AddStructure do
       attribute_writable?: true
     )
     |> add_primary_read_action()
-    |> Ash.Resource.Builder.add_action(:create, :upsert_balance,
+    |> Ash.Resource.Builder.add_new_action(:create, :upsert_balance,
       accept: [:balance, :account_id, :transfer_id],
       upsert?: true,
       upsert_identity: :unique_references
     )
-    |> Ash.Resource.Builder.add_action(:update, :adjust_balance,
+    |> Ash.Resource.Builder.add_new_action(:update, :adjust_balance,
       changes: [
         Ash.Resource.Builder.build_action_change(
           {Ash.Resource.Change.Filter,
@@ -78,7 +78,7 @@ defmodule AshDoubleEntry.Balance.Transformers.AddStructure do
         )
       ]
     )
-    |> Ash.Resource.Builder.add_identity(:unique_references, [:account_id, :transfer_id],
+    |> Ash.Resource.Builder.add_new_identity(:unique_references, [:account_id, :transfer_id],
       pre_check_with: pre_check_with(dsl)
     )
   end
