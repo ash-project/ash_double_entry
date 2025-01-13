@@ -5,6 +5,15 @@ See [Conventional Commits](Https://conventionalcommits.org) for commit guideline
 
 <!-- changelog -->
 
+## [v1.0.9](https://github.com/ash-project/ash_double_entry/compare/v1.0.8...v1.0.9) (2025-01-13)
+
+
+
+
+### Improvements:
+
+* proper reference for section order config in installer
+
 ## [v1.0.8](https://github.com/ash-project/ash_double_entry/compare/v1.0.7...v1.0.8) (2025-01-13)
 
 
