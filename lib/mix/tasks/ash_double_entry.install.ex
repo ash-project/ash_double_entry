@@ -93,7 +93,11 @@ if Code.ensure_loaded?(Igniter) do
           igniter
           |> Igniter.compose_task("ash.gen.domain", [inspect(domain), "--ignore-if-exists"])
           |> Igniter.Project.Formatter.import_dep(:ash_double_entry)
-          |> Spark.Igniter.prepend_to_section_order(Ash.Resource, [:account, :balance, :transfer])
+          |> Spark.Igniter.prepend_to_section_order(:"Ash.Resource", [
+            :account,
+            :balance,
+            :transfer
+          ])
           |> Igniter.Project.Config.configure(
             "config.exs",
             :ash,
