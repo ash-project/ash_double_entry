@@ -14,6 +14,7 @@ defmodule AshDoubleEntry.MixProject do
       start_permanent: Mix.env() == :prod,
       consolidate_protocols: Mix.env() != :test,
       description: @description,
+      dialyzer: [plt_add_apps: [:mix]],
       aliases: aliases(),
       deps: deps(),
       package: package(),
