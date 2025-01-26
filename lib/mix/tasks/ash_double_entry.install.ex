@@ -263,7 +263,7 @@ if Code.ensure_loaded?(Igniter) do
 
         read :lock_accounts do
           # Used to lock accounts while doing ledger operations
-          prepare {AshDoubleEntry.Preparations.LockForUpdate, []}
+          prepare {AshDoubleEntry.Account.Preparations.LockForUpdate, []}
         end
       end
 
@@ -286,7 +286,7 @@ if Code.ensure_loaded?(Igniter) do
         calculate :balance_as_of, :money do
           calculation {AshDoubleEntry.Account.Calculations.BalanceAsOf, resource: __MODULE__}
 
-          argument :ulid, AshDoubleEntry.ULID do
+          argument :timestamp, AshDoubleEntry.ULID do
             allow_nil? false
             allow_expr? true
             default &DateTime.utc_now/0
