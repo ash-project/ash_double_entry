@@ -5,6 +5,17 @@ See [Conventional Commits](Https://conventionalcommits.org) for commit guideline
 
 <!-- changelog -->
 
+## [v1.0.10](https://github.com/ash-project/ash_double_entry/compare/v1.0.9...v1.0.10) (2025-01-26)
+
+
+
+
+### Bug Fixes:
+
+* use correct module reference in installer(#82)
+
+* Use correct argument name for :balance_as_of calc in installer
+
 ## [v1.0.9](https://github.com/ash-project/ash_double_entry/compare/v1.0.8...v1.0.9) (2025-01-13)
 
 
