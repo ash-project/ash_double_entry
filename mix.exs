@@ -18,7 +18,7 @@ defmodule AshDoubleEntry.MixProject do
       aliases: aliases(),
       deps: deps(),
       package: package(),
-      docs: docs(),
+      docs: &docs/0,
       source_url: "https://github.com/ash-project/ash_double_entry",
       homepage_url: "https://github.com/ash-project/ash_double_entry",
       consolidate_protocols: Mix.env() != :test
@@ -51,8 +51,7 @@ defmodule AshDoubleEntry.MixProject do
       docs: [
         "spark.cheat_sheets",
         "docs",
-        "spark.replace_doc_links",
-        "spark.cheat_sheets_in_search"
+        "spark.replace_doc_links"
       ],
       "spark.formatter":
         "spark.formatter --extensions AshDoubleEntry.Account,AshDoubleEntry.Balance,AshDoubleEntry.Transfer",
@@ -87,9 +86,12 @@ defmodule AshDoubleEntry.MixProject do
         {"README.md", title: "Home"},
         {"documentation/tutorials/getting-started-with-ash-double-entry.md",
          title: "Get Started"},
-        "documentation/dsls/DSL-AshDoubleEntry.Account.md",
-        "documentation/dsls/DSL-AshDoubleEntry.Balance.md",
-        "documentation/dsls/DSL-AshDoubleEntry.Transfer.md",
+        {"documentation/dsls/DSL-AshDoubleEntry.Account.md",
+         search_data: Spark.Docs.search_data_for(AshDoubleEntry.Account)},
+        {"documentation/dsls/DSL-AshDoubleEntry.Balance.md",
+         search_data: Spark.Docs.search_data_for(AshDoubleEntry.Balance)},
+        {"documentation/dsls/DSL-AshDoubleEntry.Transfer.md",
+         search_data: Spark.Docs.search_data_for(AshDoubleEntry.Transfer)},
         "CHANGELOG.md"
       ],
       groups_for_extras: [
@@ -129,7 +131,7 @@ defmodule AshDoubleEntry.MixProject do
       # dev/test dependencies
       {:igniter, "~> 0.5", only: [:dev, :test]},
       {:git_ops, "~> 2.5", only: [:dev, :test]},
-      {:ex_doc, "~> 0.36.1", only: [:dev, :test], runtime: false},
+      {:ex_doc, "~> 0.37-rc", only: [:dev, :test], runtime: false},
       {:ex_check, "~> 0.14", only: [:dev, :test]},
       {:credo, ">= 0.0.0", only: [:dev, :test], runtime: false},
       {:dialyxir, ">= 0.0.0", only: [:dev, :test], runtime: false},
