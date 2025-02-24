@@ -5,6 +5,15 @@ See [Conventional Commits](Https://conventionalcommits.org) for commit guideline
 
 <!-- changelog -->
 
+## [v1.0.11](https://github.com/ash-project/ash_double_entry/compare/v1.0.10...v1.0.11) (2025-02-24)
+
+
+
+
+### Bug Fixes:
+
+* use `utc_datetime_usec` in balance_as_of in installer
+
 ## [v1.0.10](https://github.com/ash-project/ash_double_entry/compare/v1.0.9...v1.0.10) (2025-01-26)
 
 
