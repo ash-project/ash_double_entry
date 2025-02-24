@@ -286,7 +286,7 @@ if Code.ensure_loaded?(Igniter) do
         calculate :balance_as_of, :money do
           calculation {AshDoubleEntry.Account.Calculations.BalanceAsOf, resource: __MODULE__}
 
-          argument :timestamp, AshDoubleEntry.ULID do
+          argument :timestamp, :utc_datetime_usec do
             allow_nil? false
             allow_expr? true
             default &DateTime.utc_now/0
