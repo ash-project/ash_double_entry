@@ -346,13 +346,6 @@ if Code.ensure_loaded?(Igniter) do
 
         has_many :balances, #{inspect(balance)}
       end
-
-      changes do
-        change AshDoubleEntry.Transfer.Changes.VerifyTransfer do
-          only_when_valid? true
-          on [:create, :update, :destroy]
-        end
-      end
       """)
     end
 
