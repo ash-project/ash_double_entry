@@ -5,6 +5,15 @@ See [Conventional Commits](Https://conventionalcommits.org) for commit guideline
 
 <!-- changelog -->
 
+## [v1.0.12](https://github.com/ash-project/ash_double_entry/compare/v1.0.11...v1.0.12) (2025-02-24)
+
+
+
+
+### Bug Fixes:
+
+* don't include VerifyTransfer in the codegen
+
 ## [v1.0.11](https://github.com/ash-project/ash_double_entry/compare/v1.0.10...v1.0.11) (2025-02-24)
 
 
