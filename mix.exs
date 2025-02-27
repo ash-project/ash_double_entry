@@ -15,6 +15,7 @@ defmodule AshDoubleEntry.MixProject do
       consolidate_protocols: Mix.env() != :test,
       description: @description,
       dialyzer: [plt_add_apps: [:mix]],
+      elixirc_paths: elixirc_paths(Mix.env()),
       aliases: aliases(),
       deps: deps(),
       package: package(),
@@ -31,6 +32,12 @@ defmodule AshDoubleEntry.MixProject do
       extra_applications: [:logger]
     ]
   end
+
+  defp elixirc_paths(:test) do
+    ["lib", "test/support"]
+  end
+
+  defp elixirc_paths(_), do: ["lib"]
 
   defp package do
     [
