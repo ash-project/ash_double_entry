@@ -1,4 +1,5 @@
 defmodule AshDoubleEntry.Test.Account do
+  @moduledoc false
   use Ash.Resource,
     domain: AshDoubleEntry.Test.Domain,
     data_layer: AshPostgres.DataLayer,

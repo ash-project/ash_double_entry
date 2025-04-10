@@ -1,10 +1,13 @@
 defmodule AshDoubleEntry.Test.Balance do
+  @moduledoc false
+
   use Ash.Resource,
     domain: AshDoubleEntry.Test.Domain,
     data_layer: AshPostgres.DataLayer,
     extensions: [AshDoubleEntry.Balance]
 
   defmodule RequiresPositiveBalance do
+    @moduledoc false
     use Ash.Resource.Validation
 
     def validate(changeset, _, _) do
