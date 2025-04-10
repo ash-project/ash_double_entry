@@ -1,7 +1,7 @@
 defmodule AshDoubleEntry.MixProject do
   use Mix.Project
 
-  @version "1.0.13"
+  @version "1.0.14"
   @description """
   A customizable double entry bookkeeping system backed by Ash resources.
   """

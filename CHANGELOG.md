@@ -5,6 +5,15 @@ See [Conventional Commits](Https://conventionalcommits.org) for commit guideline
 
 <!-- changelog -->
 
+## [v1.0.14](https://github.com/ash-project/ash_double_entry/compare/v1.0.13...v1.0.14) (2025-04-10)
+
+
+
+
+### Bug Fixes:
+
+* use data from result for properly atomic transfer verification
+
 ## [v1.0.13](https://github.com/ash-project/ash_double_entry/compare/v1.0.12...v1.0.13) (2025-04-10)
 
 
