@@ -10,7 +10,7 @@ defmodule AshDoubleEntry.Test.Repo do
      )}
   end
 
-  def list_tenants, do: []
+  def all_tenants, do: []
 
   @doc false
   def installed_extensions,
