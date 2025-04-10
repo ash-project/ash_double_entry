@@ -41,6 +41,10 @@ defmodule AshDoubleEntry.Test.Balance do
   postgres do
     table "balances"
     repo(AshDoubleEntry.Test.Repo)
+
+    references do
+      reference(:transfer, on_delete: :delete)
+    end
   end
 
   balance do

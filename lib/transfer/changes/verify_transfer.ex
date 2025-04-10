@@ -51,9 +51,9 @@ defmodule AshDoubleEntry.Transfer.Changes.VerifyTransfer do
         end
         |> maybe_destroy_balances(context)
         |> Ash.Changeset.after_action(fn changeset, result ->
-          from_account_id = Ash.Changeset.get_attribute(changeset, :from_account_id)
-          to_account_id = Ash.Changeset.get_attribute(changeset, :to_account_id)
-          new_amount = Ash.Changeset.get_attribute(changeset, :amount)
+          from_account_id = result.from_account_id
+          to_account_id = result.to_account_id
+          new_amount = result.amount
 
           old_amount =
             if changeset.action.type == :destroy do

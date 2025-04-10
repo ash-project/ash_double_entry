@@ -271,8 +271,11 @@ defmodule AshDoubleEntryTest do
         Ash.destroy!(transfer_2)
       end
 
+      # we test atomic destroy here
       assert_raise Ash.Error.Invalid, ~r/balance cannot be negative/, fn ->
-        Ash.destroy!(transfer_3)
+        Transfer
+        |> Ash.Query.filter(id == ^transfer_3.id)
+        |> Ash.bulk_destroy!(:destroy, %{}, return_errors?: true)
       end
 
       Ash.destroy!(transfer_4)
