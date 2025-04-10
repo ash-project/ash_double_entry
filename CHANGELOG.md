@@ -5,6 +5,15 @@ See [Conventional Commits](Https://conventionalcommits.org) for commit guideline
 
 <!-- changelog -->
 
+## [v1.0.13](https://github.com/ash-project/ash_double_entry/compare/v1.0.12...v1.0.13) (2025-04-10)
+
+
+
+
+### Improvements:
+
+* install latest ash_money
+
 ## [v1.0.12](https://github.com/ash-project/ash_double_entry/compare/v1.0.11...v1.0.12) (2025-02-24)
 
 
