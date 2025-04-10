@@ -17,6 +17,11 @@ defmodule AshDoubleEntry.MixProject do
       dialyzer: [plt_add_apps: [:mix]],
       elixirc_paths: elixirc_paths(Mix.env()),
       aliases: aliases(),
+      preferred_cli_env: [
+        "test.create": :test,
+        "test.generate_migrations": :test,
+        "test.migrate": :test
+      ],
       deps: deps(),
       package: package(),
       docs: &docs/0,
@@ -60,6 +65,9 @@ defmodule AshDoubleEntry.MixProject do
         "docs",
         "spark.replace_doc_links"
       ],
+      "test.generate_migrations": "ash_postgres.generate_migrations",
+      "test.create": "ash_postgres.create",
+      "test.migrate": "ash_postgres.migrate",
       "spark.formatter":
         "spark.formatter --extensions AshDoubleEntry.Account,AshDoubleEntry.Balance,AshDoubleEntry.Transfer",
       "spark.cheat_sheets":
@@ -136,6 +144,7 @@ defmodule AshDoubleEntry.MixProject do
       {:ash_money, "~> 0.1"},
       {:ex_money_sql, "~> 1.10"},
       # dev/test dependencies
+      {:ash_postgres, path: "../../ash/ash_postgres", only: [:dev, :test], override: true},
       {:igniter, "~> 0.5", only: [:dev, :test]},
       {:git_ops, "~> 2.5", only: [:dev, :test]},
       {:ex_doc, "~> 0.37-rc", only: [:dev, :test], runtime: false},

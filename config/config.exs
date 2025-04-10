@@ -19,6 +19,18 @@ if config_env() == :test do
   config :ash, :validate_domain_config_inclusion?, false
   config :ash, :disable_async?, true
   config :ex_money, default_cldr_backend: AshMoney.Cldr
+
+  config :ash_double_entry,
+    ecto_repos: [AshDoubleEntry.Test.Repo],
+    ash_domains: [AshDoubleEntry.Test.Domain]
+
+  config :ash_double_entry, AshDoubleEntry.Test.Repo,
+    username: "postgres",
+    password: "postgres",
+    hostname: "localhost",
+    database: "ash_double_entry_test#{System.get_env("MIX_TEST_PARTITION")}",
+    pool: Ecto.Adapters.SQL.Sandbox,
+    pool_size: 10
 end
 
 config :ash, :known_types, [AshMoney.Types.Money]

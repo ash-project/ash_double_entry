@@ -1,116 +1,11 @@
 defmodule AshDoubleEntryTest do
-  use ExUnit.Case
+  use DataCase, async: false
   require Ash.Query
 
-  defmodule RequiresPositiveBalance do
-    use Ash.Resource.Validation
+  alias AshDoubleEntry.Test.{Account, Transfer}
 
-    def validate(changeset, _, _) do
-      account_id = Ash.Changeset.get_attribute(changeset, :account_id)
-
-      if is_nil(account_id) do
-        :ok
-      else
-        account = Ash.get!(AshDoubleEntryTest.Account, account_id, authorize?: false)
-
-        if account.allow_zero_balance do
-          {:error, "Account must require positive balance"}
-        else
-          :ok
-        end
-      end
-    end
-
-    def atomic(_changeset, _, _) do
-      {:atomic, [:account], expr(account.allow_zero_balance == false),
-       expr(
-         error(Ash.Error.Changes.InvalidRelationship,
-           relationship: :account,
-           message: "Account must require positive balance"
-         )
-       )}
-    end
-  end
-
-  defmodule Account do
-    use Ash.Resource,
-      domain: AshDoubleEntryTest.Domain,
-      data_layer: Ash.DataLayer.Ets,
-      extensions: [AshDoubleEntry.Account]
-
-    ets do
-      private? true
-    end
-
-    account do
-      pre_check_identities_with AshDoubleEntryTest.Domain
-      transfer_resource AshDoubleEntryTest.Transfer
-      balance_resource AshDoubleEntryTest.Balance
-      open_action_accept [:allow_zero_balance]
-    end
-
-    attributes do
-      attribute :allow_zero_balance, :boolean do
-        default true
-      end
-    end
-  end
-
-  defmodule Transfer do
-    use Ash.Resource,
-      domain: AshDoubleEntryTest.Domain,
-      data_layer: Ash.DataLayer.Ets,
-      extensions: [AshDoubleEntry.Transfer]
-
-    ets do
-      private? true
-    end
-
-    transfer do
-      account_resource Account
-      balance_resource AshDoubleEntryTest.Balance
-    end
-
-    actions do
-      defaults [:destroy, update: [:amount]]
-    end
-  end
-
-  defmodule Balance do
-    use Ash.Resource,
-      domain: AshDoubleEntryTest.Domain,
-      data_layer: Ash.DataLayer.Ets,
-      extensions: [AshDoubleEntry.Balance]
-
-    ets do
-      private? true
-    end
-
-    balance do
-      pre_check_identities_with AshDoubleEntryTest.Domain
-      transfer_resource Transfer
-      account_resource Account
-    end
-
-    actions do
-      defaults [:destroy]
-    end
-
-    validations do
-      validate compare(:balance, greater_than_or_equal_to: 0),
-        where: [RequiresPositiveBalance],
-        message: "balance cannot be negative"
-    end
-  end
-
-  defmodule Domain do
-    use Ash.Domain
-
-    resources do
-      resource Account
-      resource Transfer
-      resource Balance
-    end
+  setup do
+    :ok
   end
 
   describe "opening accounts" do
@@ -293,7 +188,11 @@ defmodule AshDoubleEntryTest do
 
       account_two =
         Account
-        |> Ash.Changeset.for_create(:open, %{identifier: "account_two", currency: "USD"})
+        |> Ash.Changeset.for_create(:open, %{
+          identifier: "account_two",
+          currency: "USD",
+          allow_zero_balance: false
+        })
         |> Ash.create!()
 
       transfer_1 =
@@ -302,7 +201,7 @@ defmodule AshDoubleEntryTest do
           amount: Money.new!(:USD, 20),
           from_account_id: account_one.id,
           to_account_id: account_two.id,
-          timestamp: now
+          timestamp: DateTime.add(now, -10, :minute)
         })
         |> Ash.create!()
 
@@ -310,9 +209,51 @@ defmodule AshDoubleEntryTest do
         Transfer
         |> Ash.Changeset.for_create(:transfer, %{
           amount: Money.new!(:USD, 20),
+          from_account_id: account_one.id,
+          to_account_id: account_two.id,
+          timestamp: DateTime.add(now, -9, :minute)
+        })
+        |> Ash.create!()
+
+      transfer_3 =
+        Transfer
+        |> Ash.Changeset.for_create(:transfer, %{
+          amount: Money.new!(:USD, 20),
+          from_account_id: account_one.id,
+          to_account_id: account_two.id,
+          timestamp: DateTime.add(now, -8, :minute)
+        })
+        |> Ash.create!()
+
+      assert Money.equal?(
+               Ash.load!(account_one, :balance_as_of).balance_as_of,
+               Money.new!(:USD, -60)
+             )
+
+      assert Money.equal?(
+               Ash.load!(account_two, :balance_as_of).balance_as_of,
+               Money.new!(:USD, 60)
+             )
+
+      transfer_1 |> Ash.destroy!()
+
+      assert Money.equal?(
+               Ash.load!(account_one, :balance_as_of).balance_as_of,
+               Money.new!(:USD, -40)
+             )
+
+      assert Money.equal?(
+               Ash.load!(account_two, :balance_as_of).balance_as_of,
+               Money.new!(:USD, 40)
+             )
+
+      transfer_4 =
+        Transfer
+        |> Ash.Changeset.for_create(:transfer, %{
+          amount: Money.new!(:USD, 40),
           from_account_id: account_two.id,
           to_account_id: account_one.id,
-          timestamp: DateTime.add(now, -2, :minute)
+          timestamp: DateTime.add(now, -7, :minute)
         })
         |> Ash.create!()
 
@@ -327,10 +268,27 @@ defmodule AshDoubleEntryTest do
              )
 
       assert_raise Ash.Error.Invalid, ~r/balance cannot be negative/, fn ->
-        transfer_2 |> Ash.destroy!()
+        Ash.destroy!(transfer_2)
       end
 
-      transfer_1 |> Ash.destroy!()
+      assert_raise Ash.Error.Invalid, ~r/balance cannot be negative/, fn ->
+        Ash.destroy!(transfer_3)
+      end
+
+      Ash.destroy!(transfer_4)
+
+      assert Money.equal?(
+               Ash.load!(account_one, :balance_as_of).balance_as_of,
+               Money.new!(:USD, -40)
+             )
+
+      assert Money.equal?(
+               Ash.load!(account_two, :balance_as_of).balance_as_of,
+               Money.new!(:USD, 40)
+             )
+
+      Ash.destroy!(transfer_2)
+      Ash.destroy!(transfer_3)
 
       assert Money.equal?(
                Ash.load!(account_one, :balance_as_of).balance_as_of,
