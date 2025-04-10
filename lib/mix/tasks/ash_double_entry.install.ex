@@ -40,7 +40,7 @@ if Code.ensure_loaded?(Igniter) do
         adds_deps: [],
         # dependencies to add and call their associated installers, if they exist
         installs: [
-          {:ash_money, "~> 0.1"}
+          {:ash_money, "~> 0.2"}
         ],
         # An example invocation
         example: __MODULE__.Docs.example(),
@@ -234,7 +234,7 @@ if Code.ensure_loaded?(Igniter) do
       attributes do
         uuid_v7_primary_key :id
 
-        attribute :identifier, :string do 
+        attribute :identifier, :string do
           allow_nil? false
         end
 
