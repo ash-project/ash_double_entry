@@ -140,7 +140,7 @@ defmodule AshDoubleEntry.MixProject do
   # Run "mix help deps" to learn about dependencies.
   defp deps do
     [
-      {:ash, ash_version("~> 3.0")},
+      {:ash, ash_version("~> 3.0 and >= 3.5.4")},
       {:ash_money, "~> 0.1"},
       {:ex_money_sql, "~> 1.10"},
       # dev/test dependencies
