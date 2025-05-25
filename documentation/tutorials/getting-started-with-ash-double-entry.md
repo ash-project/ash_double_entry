@@ -248,7 +248,6 @@ YourApp.Ledger.Account
 # => Money.new!(20, :USD)
 ```
 
-
 ## What else can you do?
 
 There are tons of things you can do with your resources. You can add code interfaces to give yourself a nice functional api. You can add custom attributes, aggregates, calculations, relationships, validations, changes, all the great things built into `Ash.Resource`! See the docs for more: [AshHq](https://ash-hq.org).
