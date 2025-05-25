@@ -219,6 +219,26 @@ YourApp.Ledger.Transfer
 |> YourApp.Ledger.create!()
 ```
 
+#### Update existing transfers
+```elixir
+YourApp.Ledger.Transfer
+|> Ash.Changeset.for_create(:transfer, %{
+  amount: Money.new!(:USD, 20),
+  from_account_id: account_one.id,
+  to_account_id: account_two.id
+})
+|> Ash.create!()
+|> Ash.Changeset.for_update(:update, %{amount: Money.new!(:USD, 10)})
+|> Ash.update!()
+```
+
+> #### note {: .warning}
+> If `config :ash, :default_actions_require_atomic?` is set to `true`,
+> the `Transfer` resource `update` actions must define
+> `change get_and_lock_for_update()` and `require_atomic? false`. It's OK
+> to add `require_atomic? false` because the relevant accounts are locked
+> before updating them.
+
 #### Check an account's balance
 
 ```elixir
@@ -227,6 +247,7 @@ YourApp.Ledger.Account
 |> Map.get(:balance_as_of)
 # => Money.new!(20, :USD)
 ```
+
 
 ## What else can you do?
 
