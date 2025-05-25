@@ -13,7 +13,7 @@ defmodule AshDoubleEntry.Transfer.Changes.VerifyTransfer do
           changeset.action.type == :destroy) ||
          (Ash.Changeset.changing_attribute?(changeset, :amount) &&
             !changeset.context[:ash_double_entry][:skip_balance_updates]) do
-      {:error,
+      {:not_atomic,
        "Cannot destroy a transfer atomically if balances must be destroyed manually, or if balance is being updated"}
     else
       {:ok, change(changeset, opts, context)}
