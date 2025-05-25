@@ -14,6 +14,16 @@ if Mix.env() == :dev do
     version_tag_prefix: "v"
 end
 
+config :ash, :allow_forbidden_field_for_relationships_by_default?, true
+config :ash, :include_embedded_source_by_default?, false
+config :ash, :show_keysets_for_all_actions?, false
+config :ash, :default_page_type, :keyset
+config :ash, :policies, no_filter_static_forbidden_reads?: false
+config :ash, :keep_read_action_loads_when_loading?, false
+config :ash, :default_actions_require_atomic?, true
+config :ash, :read_action_after_action_hooks_in_order?, true
+config :ash, :bulk_actions_default_to_errors?, true
+
 if config_env() == :test do
   config :ash, :validate_domain_resource_inclusion?, false
   config :ash, :validate_domain_config_inclusion?, false

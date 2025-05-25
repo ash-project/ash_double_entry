@@ -16,6 +16,12 @@ defmodule AshDoubleEntry.Test.Transfer do
   end
 
   actions do
-    defaults [:read, :destroy, update: [:amount]]
+    defaults [:read, :destroy]
+
+    update :update do
+      accept [:amount]
+      change get_and_lock_for_update()
+      require_atomic? false
+    end
   end
 end
