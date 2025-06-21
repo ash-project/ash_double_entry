@@ -168,7 +168,7 @@ end
   - a primary read action called `:read`, if a priamry read action doesn't
     exist
   - configure primary read action to have keyset pagination enabled
-  - a create action caleld `:upsert_balance`, which will create or update the relevant balance, by `transfer_id` and `account_id`
+  - a create action called `:upsert_balance`, which will create or update the relevant balance, by `transfer_id` and `account_id`
 - Adds an identity that ensures that `account_id` and `transfer_id` are unique
 
 ### Define an Ash domain to use them through
