@@ -204,7 +204,7 @@ And add the domain to your config
 ```elixir
 YourApp.Ledger.Account
 |> Ash.Changeset.for_create(:open, %{identifier: "account_one"})
-|> YourApp.Ledger.create!()
+|> Ash.create!()
 ```
 
 #### Create transfers between accounts
@@ -216,7 +216,7 @@ YourApp.Ledger.Transfer
   from_account_id: account_one.id,
   to_account_id: account_two.id
 })
-|> YourApp.Ledger.create!()
+|> Ash.create!()
 ```
 
 #### Update existing transfers
