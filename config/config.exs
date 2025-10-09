@@ -36,6 +36,7 @@ if config_env() == :test do
 
   config :ash_double_entry, AshDoubleEntry.Test.Repo,
     username: "postgres",
+    # sobelow_skip ["Config.Secrets"]
     password: "postgres",
     hostname: "localhost",
     database: "ash_double_entry_test#{System.get_env("MIX_TEST_PARTITION")}",
