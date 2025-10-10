@@ -1,3 +1,9 @@
+<!--
+SPDX-FileCopyrightText: 2020 Zach Daniel
+
+SPDX-License-Identifier: MIT
+-->
+
 # Getting Started with Ash Double Entry
 
 Ash Double Entry is implemented as a set of Ash resource extensions. You build the resources yourself, and the extensions add the attributes, relationships, actions and validations required for them to constitute a double entry system.

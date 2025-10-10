@@ -1,3 +1,7 @@
+# SPDX-FileCopyrightText: 2020 Zach Daniel
+#
+# SPDX-License-Identifier: MIT
+
 defmodule AshDoubleEntry.Account.Transformers.AddStructure do
   # Adds all the structure required for the resource. See the getting started guide for more.
   @moduledoc false

@@ -1,3 +1,7 @@
+# SPDX-FileCopyrightText: 2020 Zach Daniel
+#
+# SPDX-License-Identifier: MIT
+
 name: CI
 on:
   push:
@@ -12,5 +16,6 @@ jobs:
     with:
       postgres: true
       postgres-version: "16"
+      reuse: true
     secrets:
       hex_api_key: ${{ secrets.HEX_API_KEY }}

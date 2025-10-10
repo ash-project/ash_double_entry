@@ -1,3 +1,7 @@
+# SPDX-FileCopyrightText: 2020 Zach Daniel
+#
+# SPDX-License-Identifier: MIT
+
 defmodule AshDoubleEntry.Account do
   @moduledoc """
   An extension for creating a double entry ledger account. See the getting started guide for more.

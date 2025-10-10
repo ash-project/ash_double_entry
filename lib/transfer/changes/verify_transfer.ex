@@ -1,3 +1,7 @@
+# SPDX-FileCopyrightText: 2020 Zach Daniel
+#
+# SPDX-License-Identifier: MIT
+
 defmodule AshDoubleEntry.Transfer.Changes.VerifyTransfer do
   # Verify a transfer and update all related balances of the accounts involved.
 
