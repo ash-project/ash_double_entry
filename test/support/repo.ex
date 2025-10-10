@@ -1,3 +1,7 @@
+# SPDX-FileCopyrightText: 2020 Zach Daniel
+#
+# SPDX-License-Identifier: MIT
+
 defmodule AshDoubleEntry.Test.Repo do
   @moduledoc false
   use AshPostgres.Repo, otp_app: :ash_double_entry

@@ -1,3 +1,7 @@
+# SPDX-FileCopyrightText: 2020 Zach Daniel
+#
+# SPDX-License-Identifier: MIT
+
 defmodule AshDoubleEntry.Account.Preparations.LockForUpdate do
   # Locks the results of the query for update
   @moduledoc false

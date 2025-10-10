@@ -1,3 +1,7 @@
+# SPDX-FileCopyrightText: 2020 Zach Daniel
+#
+# SPDX-License-Identifier: MIT
+
 # Used by "mix format"
 spark_locals_without_parens = [
   account_resource: 1,

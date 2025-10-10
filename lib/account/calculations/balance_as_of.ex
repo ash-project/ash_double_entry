@@ -1,3 +1,7 @@
+# SPDX-FileCopyrightText: 2020 Zach Daniel
+#
+# SPDX-License-Identifier: MIT
+
 defmodule AshDoubleEntry.Account.Calculations.BalanceAsOf do
   # Calculates the balance as of a given datetime. See the getting started guide for more.
   @moduledoc false

@@ -1,3 +1,7 @@
+# SPDX-FileCopyrightText: 2020 Zach Daniel
+#
+# SPDX-License-Identifier: MIT
+
 defmodule AshDoubleEntry.Balance.Changes.AdjustBalance do
   @moduledoc false
   use Ash.Resource.Change

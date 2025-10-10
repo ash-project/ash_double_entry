@@ -1,3 +1,7 @@
+# SPDX-FileCopyrightText: 2020 Zach Daniel
+#
+# SPDX-License-Identifier: MIT
+
 defmodule AshDoubleEntry.MixProject do
   use Mix.Project
 
@@ -46,12 +50,20 @@ defmodule AshDoubleEntry.MixProject do
 
   defp package do
     [
-      name: :ash_double_entry,
+      maintainers: [
+        "Zach Daniel <zach@zachdaniel.dev>"
+      ],
       licenses: ["MIT"],
       files: ~w(lib .formatter.exs mix.exs README* LICENSE*
         CHANGELOG* documentation),
       links: %{
-        GitHub: "https://github.com/ash-project/ash_double_entry"
+        "GitHub" => "https://github.com/ash-project/ash_double_entry",
+        "Changelog" => "https://github.com/ash-project/ash_double_entry/blob/main/CHANGELOG.md",
+        "Discord" => "https://discord.gg/HTHRaaVPUc",
+        "Website" => "https://ash-hq.org",
+        "Forum" => "https://elixirforum.com/c/elixir-framework-forums/ash-framework-forum",
+        "REUSE Compliance" =>
+          "https://api.reuse.software/info/github.com/ash-project/ash_double_entry"
       }
     ]
   end

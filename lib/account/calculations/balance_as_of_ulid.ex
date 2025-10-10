@@ -1,3 +1,7 @@
+# SPDX-FileCopyrightText: 2020 Zach Daniel
+#
+# SPDX-License-Identifier: MIT
+
 defmodule AshDoubleEntry.Account.Calculations.BalanceAsOfUlid do
   # Calculates the balance as of a given transfer id. See the getting started guide for more.
   @moduledoc false
