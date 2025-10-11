@@ -156,8 +156,7 @@ defmodule AshDoubleEntry.MixProject do
       {:ash_money, "~> 0.1"},
       {:ex_money_sql, "~> 1.10"},
       # dev/test dependencies
-      # todo get this on a real version
-      {:ash_postgres, github: "ash-project/ash_postgres", only: [:dev, :test], override: true},
+      {:ash_postgres, "~> 2.6 and >= 2.6.21", only: [:dev, :test]},
       {:igniter, "~> 0.5", only: [:dev, :test]},
       {:git_ops, "~> 2.5", only: [:dev, :test]},
       {:ex_doc, "~> 0.37-rc", only: [:dev, :test], runtime: false},
