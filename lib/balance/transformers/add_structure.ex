@@ -9,6 +9,7 @@ defmodule AshDoubleEntry.Balance.Transformers.AddStructure do
   import Spark.Dsl.Builder
   import Ash.Expr
 
+  def before?(Ash.Resource.Transformers.SetRelationshipSource), do: true
   def before?(Ash.Resource.Transformers.CachePrimaryKey), do: true
   def before?(Ash.Resource.Transformers.BelongsToAttribute), do: true
   def before?(_), do: false

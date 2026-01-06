@@ -7,6 +7,7 @@ defmodule AshDoubleEntry.Transfer.Transformers.AddStructure do
   @moduledoc false
   use Spark.Dsl.Transformer
 
+  def before?(Ash.Resource.Transformers.SetRelationshipSource), do: true
   def before?(Ash.Resource.Transformers.CachePrimaryKey), do: true
   def before?(Ash.Resource.Transformers.BelongsToSourceField), do: true
   def before?(Ash.Resource.Transformers.BelongsToAttribute), do: true
