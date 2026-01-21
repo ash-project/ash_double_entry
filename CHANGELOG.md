@@ -11,6 +11,15 @@ See [Conventional Commits](Https://conventionalcommits.org) for commit guideline
 
 <!-- changelog -->
 
+## [v1.0.16](https://github.com/ash-project/ash_double_entry/compare/v1.0.15...v1.0.16) (2026-01-21)
+
+
+
+
+### Bug Fixes:
+
+* #150: added `before?/1` clauses to the three transformers for `SetRelationshipSource` (#151) by Simon Bergström
+
 ## [v1.0.15](https://github.com/ash-project/ash_double_entry/compare/v1.0.14...v1.0.15) (2025-06-04)
 
 
