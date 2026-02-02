@@ -30,7 +30,7 @@ AshDoubleEntry implements double entry accounting through three core resources:
 
 ### Setup AshMoney
 
-Follow the setup guide for `AshMoney`. If you are using with `AshPostgres`, be sure to include the `:ex_money_sql` dependency in your `mix.exs`.
+Follow the setup guide for `AshMoney`, located [here](https://hexdocs.pm/ash_money/getting-started-with-ash-money.html). If you are using with `AshPostgres`, be sure to include the `:ex_money_sql` dependency in your `mix.exs`.
 
 ### Add the dependency
 
