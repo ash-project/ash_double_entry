@@ -19,7 +19,7 @@ Welcome! This is the extension for building a double entry accounting system in 
 
 ## Double Entry Accounting
 
-Double entry accounting is a fundamental accounting principle that ensures every financial transaction is recorded in at least two accounts. Each transaction records a **debit** (money going out) and **credit** (money coming in), where total debits must equal total credits. This dual-record system allows you to detect errors and ensures that books always balance.
+Double entry is a fundamental accounting principle that ensures every financial transaction is recorded in at least two accounts. Each transaction records a **debit** (money going out) and **credit** (money coming in), where total debits must equal total credits. This dual-record system allows you to detect errors and ensures that books always balance.
 
 AshDoubleEntry implements double entry accounting through three core resources:
 
