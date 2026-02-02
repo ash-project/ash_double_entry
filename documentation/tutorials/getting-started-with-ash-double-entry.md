@@ -8,6 +8,18 @@ SPDX-License-Identifier: MIT
 
 Ash Double Entry is implemented as a set of Ash resource extensions. You build the resources yourself, and the extensions add the attributes, relationships, actions and validations required for them to constitute a double entry system.
 
+## What is Double Entry Accounting?
+
+Double entry is a accounting principle that ensures every financial transaction is recorded in at least two accounts, maintaining the accounting equation of **Assets = Liabilities + Equity**. This means that every transaction has a **debit** (or money going out) and a **credit** (or money coming in), recorded in dedicated debit and credit accounts (hence the name "double entry"). The total debits must always equal the total credits, ensuring that books always balance and allowing for errors to be quickly detected.
+
+## Implementation in AshDoubleEntry
+
+AshDoubleEntry implements double entry accounting through three core resources:
+
+1. **[AshDoubleEntry.Account DSL](documentation/dsls/DSL-AshDoubleEntry.Account.md)**, which represents accounts in your ledger (such as bank accounts, revenue accounts, expense accounts, etc.).
+2. **[AshDoubleEntry.Transfer DSL](documentation/dsls/DSL-AshDoubleEntry.Transfer.md)**, which represents transactions between accounts, always linking a `from_account` and `to_account` with an amount.
+3. **[AshDoubleEntry.Balance DSL](documentation/dsls/DSL-AshDoubleEntry.Balance.md)**, which tracks the balance of each account at the point of each transfer for recordkeeping.
+
 ## What makes it special?
 
 1. Account balances are updated automatically as transfers are introduced.
