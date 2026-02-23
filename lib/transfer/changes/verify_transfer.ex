@@ -39,17 +39,27 @@ defmodule AshDoubleEntry.Transfer.Changes.VerifyTransfer do
         )
       else
         if changeset.action.type == :create do
-          timestamp = Ash.Changeset.get_attribute(changeset, :timestamp)
+          from_account_id = Ash.Changeset.get_attribute(changeset, :from_account_id)
+          to_account_id = Ash.Changeset.get_attribute(changeset, :to_account_id)
 
-          timestamp =
-            case timestamp do
-              nil -> System.system_time(:millisecond)
-              timestamp -> DateTime.to_unix(timestamp, :millisecond)
-            end
+          if from_account_id && to_account_id && from_account_id == to_account_id do
+            Ash.Changeset.add_error(changeset,
+              field: :to_account_id,
+              message: "must be different from the from account"
+            )
+          else
+            timestamp = Ash.Changeset.get_attribute(changeset, :timestamp)
 
-          ulid = AshDoubleEntry.ULID.generate(timestamp)
+            timestamp =
+              case timestamp do
+                nil -> System.system_time(:millisecond)
+                timestamp -> DateTime.to_unix(timestamp, :millisecond)
+              end
 
-          Ash.Changeset.force_change_attribute(changeset, :id, ulid)
+            ulid = AshDoubleEntry.ULID.generate(timestamp)
+
+            Ash.Changeset.force_change_attribute(changeset, :id, ulid)
+          end
         else
           changeset
         end

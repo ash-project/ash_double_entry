@@ -46,6 +46,25 @@ defmodule AshDoubleEntryTest do
       assert Money.equal?(account_balance, Money.new!(:USD, 0))
     end
 
+    test "cannot transfer to the same account" do
+      account =
+        Account
+        |> Ash.Changeset.for_create(:open, %{identifier: "account_one", currency: "USD"})
+        |> Ash.create!()
+
+      assert {:error,
+              %Ash.Error.Invalid{
+                errors: [%Ash.Error.Changes.InvalidAttribute{field: :to_account_id}]
+              }} =
+               Transfer
+               |> Ash.Changeset.for_create(:transfer, %{
+                 amount: Money.new!(:USD, 20),
+                 from_account_id: account.id,
+                 to_account_id: account.id
+               })
+               |> Ash.create()
+    end
+
     test "transfers between accounts update the balance accordingly" do
       account_one =
         Account
