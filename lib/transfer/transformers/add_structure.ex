@@ -53,7 +53,7 @@ defmodule AshDoubleEntry.Transfer.Transformers.AddStructure do
           AshDoubleEntry.Transfer.Info.transfer_create_accept!(dsl)
     )
     |> Ash.Resource.Builder.add_action(:read, :read_transfers,
-      pagination: Ash.Resource.Builder.build_pagination(keyset?: true)
+      pagination: Ash.Resource.Builder.build_pagination(keyset?: true, required?: false)
     )
     |> Ash.Resource.Builder.add_change({AshDoubleEntry.Transfer.Changes.VerifyTransfer, []},
       only_when_valid?: true,
