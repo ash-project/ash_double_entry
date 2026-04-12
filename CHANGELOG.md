@@ -11,6 +11,19 @@ See [Conventional Commits](Https://conventionalcommits.org) for commit guideline
 
 <!-- changelog -->
 
+## [v1.0.17](https://github.com/ash-project/ash_double_entry/compare/v1.0.16...v1.0.17) (2026-04-12)
+
+
+
+
+### Bug Fixes:
+
+* explicitly prevent transfers to the same account by Zach Daniel
+
+### Improvements:
+
+* Make read_transfers pagination optional (required?: false) (#159) by olivermt
+
 ## [v1.0.16](https://github.com/ash-project/ash_double_entry/compare/v1.0.15...v1.0.16) (2026-01-21)
 
 
