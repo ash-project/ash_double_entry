@@ -11,6 +11,15 @@ See [Conventional Commits](Https://conventionalcommits.org) for commit guideline
 
 <!-- changelog -->
 
+## [v1.0.19](https://github.com/ash-project/ash_double_entry/compare/v1.0.18...v1.0.19) (2026-09-07)
+
+
+
+
+### Bug Fixes:
+
+* reject non-canonical ULID spellings so each id has one encoding (CVE-2026-81638) by Zach Daniel
+
 ## [v1.0.18](https://github.com/ash-project/ash_double_entry/compare/v1.0.17...v1.0.18) (2026-07-13)
 
 
