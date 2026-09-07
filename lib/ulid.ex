@@ -200,6 +200,12 @@ defmodule AshDoubleEntry.ULID do
            c13::8, c14::8, c15::8, c16::8, c17::8, c18::8, c19::8, c20::8, c21::8, c22::8, c23::8,
            c24::8, c25::8, c26::8>>
        ) do
+    # The first Crockford character encodes only 3 bits (encode/1 writes
+    # `b1::3`). Reject any input whose first character sets the unused high
+    # bits (decodes above 7) so that each ULID has exactly one canonical
+    # spelling and `encode(decode(x)) == x` for every accepted value.
+    if d(c1) > 7, do: throw(:error)
+
     <<d(c1)::3, d(c2)::5, d(c3)::5, d(c4)::5, d(c5)::5, d(c6)::5, d(c7)::5, d(c8)::5, d(c9)::5,
       d(c10)::5, d(c11)::5, d(c12)::5, d(c13)::5, d(c14)::5, d(c15)::5, d(c16)::5, d(c17)::5,
       d(c18)::5, d(c19)::5, d(c20)::5, d(c21)::5, d(c22)::5, d(c23)::5, d(c24)::5, d(c25)::5,
@@ -253,7 +259,8 @@ defmodule AshDoubleEntry.ULID do
            c13::8, c14::8, c15::8, c16::8, c17::8, c18::8, c19::8, c20::8, c21::8, c22::8, c23::8,
            c24::8, c25::8, c26::8>>
        ) do
-    v(c1) && v(c2) && v(c3) && v(c4) && v(c5) && v(c6) && v(c7) && v(c8) && v(c9) && v(c10) &&
+    v(c1) && d(c1) <= 7 &&
+      v(c2) && v(c3) && v(c4) && v(c5) && v(c6) && v(c7) && v(c8) && v(c9) && v(c10) &&
       v(c11) && v(c12) && v(c13) &&
       v(c14) && v(c15) && v(c16) && v(c17) && v(c18) && v(c19) && v(c20) && v(c21) && v(c22) &&
       v(c23) && v(c24) && v(c25) && v(c26)
