@@ -1,3 +1,7 @@
+# SPDX-FileCopyrightText: 2023 ash_double_entry contributors <https://github.com/ash-project/ash_double_entry/graphs/contributors>
+#
+# SPDX-License-Identifier: MIT
+
 defmodule AshDoubleEntry.Test.Repo.Migrations.UpdateAshFunctionsExtensions1 do
   @moduledoc """
   Installs any extensions that are mentioned in the repo's `installed_extensions/0` callback
