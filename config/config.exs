@@ -53,3 +53,5 @@ config :logger, level: :error
 config :spark, :formatter,
   remove_parens?: true,
   "Ash.Resource": []
+
+config :ash, default_string_length_count: :codepoints
