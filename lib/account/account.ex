@@ -9,6 +9,7 @@ defmodule AshDoubleEntry.Account do
 
   @account %Spark.Dsl.Section{
     name: :account,
+    no_depend_modules: [:transfer_resource, :balance_resource],
     schema: [
       open_action_accept: [
         type: {:list, :atom},

@@ -9,6 +9,7 @@ defmodule AshDoubleEntry.Transfer do
 
   @account %Spark.Dsl.Section{
     name: :transfer,
+    no_depend_modules: [:account_resource, :balance_resource],
     schema: [
       pre_check_identities_with: [
         type: {:spark, Ash.Domain},
