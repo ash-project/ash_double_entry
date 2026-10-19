@@ -11,6 +11,15 @@ See [Conventional Commits](Https://conventionalcommits.org) for commit guideline
 
 <!-- changelog -->
 
+## [v1.1.0](https://github.com/ash-project/ash_double_entry/compare/v1.0.19...v1.1.0) (2026-10-19)
+
+
+
+
+### Features:
+
+* add after? callback for SetPrimaryActions transformer and implement primary read test (#177) by Nöl
+
 ## [v1.0.19](https://github.com/ash-project/ash_double_entry/compare/v1.0.18...v1.0.19) (2026-09-07)
 
 
