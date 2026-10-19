@@ -13,6 +13,9 @@ defmodule AshDoubleEntry.Account.Transformers.AddStructure do
   def before?(Ash.Resource.Transformers.CachePrimaryKey), do: true
   def before?(_), do: false
 
+  def after?(Ash.Resource.Transformers.SetPrimaryActions), do: true
+  def after?(_), do: false
+
   def transform(dsl) do
     dsl
     |> add_primary_read_action()
