@@ -14,6 +14,9 @@ defmodule AshDoubleEntry.Balance.Transformers.AddStructure do
   def before?(Ash.Resource.Transformers.BelongsToAttribute), do: true
   def before?(_), do: false
 
+  def after?(Ash.Resource.Transformers.SetPrimaryActions), do: true
+  def after?(_), do: false
+
   def transform(dsl) do
     storage_type =
       if AshDoubleEntry.Balance.Info.balance_money_composite_type?(dsl) do
