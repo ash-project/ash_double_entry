@@ -203,8 +203,10 @@ defmodule AshDoubleEntry.Transfer.Changes.VerifyTransfer do
     end
   end
 
+  # Without `destroy_balances?`, the data layer cascades the delete to the balances.
   defp maybe_destroy_balances(changeset, context) do
-    if changeset.action.type == :destroy do
+    if changeset.action.type == :destroy &&
+         AshDoubleEntry.Transfer.Info.transfer_destroy_balances?(changeset.resource) do
       balance_resource =
         changeset.resource
         |> AshDoubleEntry.Transfer.Info.transfer_balance_resource!()
