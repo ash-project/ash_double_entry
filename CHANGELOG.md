@@ -11,6 +11,15 @@ See [Conventional Commits](Https://conventionalcommits.org) for commit guideline
 
 <!-- changelog -->
 
+## [v1.1.1](https://github.com/ash-project/ash_double_entry/compare/v1.1.0...v1.1.1) (2026-10-22)
+
+
+
+
+### Bug Fixes:
+
+* only add destroy balance change when required by Zach Daniel
+
 ## [v1.1.0](https://github.com/ash-project/ash_double_entry/compare/v1.0.19...v1.1.0) (2026-10-19)
 
 
